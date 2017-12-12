@@ -1,0 +1,163 @@
+.section-active-users {
+    text-align: center;
+    font-size: 2em;
+}
+.active-users {
+    font-size: 4em;
+    font-weight: bold;
+}
+.section-hourly-users table {
+    table-layout: fixed;
+}
+.section-hourly-users tr:first-child td {
+    height: 150px;
+    vertical-align: bottom;
+    text-align: center;
+    width: 4%;
+}
+.card header {
+    margin: -18px -18px;
+    background: #0078ae;
+    padding: 18px 18px .1px;
+    color: white;
+}
+.card header .form-control {
+    color: white;
+    background-color: #1A6D93;
+    border-color: transparent;
+    transition: 0.2s all;
+}
+.card header .form-control:focus {
+    color: #474f53;
+    background-color: #f7f7f7;
+    outline: none;
+}
+.text-right {
+    text-align: right;
+}
+.progress {
+    background: #eee;
+    height: .5em;
+    border-radius: 2px;
+    overflow: hidden;
+    clear: both;
+}
+.progress-bar {
+    background: #0078ae;
+    text-indent: -999em;
+    line-height: .5em;
+}
+.progress-vertical {
+    width: 100%;
+    height: 100%;
+    background: #0078ae;
+    margin: 0 auto;
+}
+.progress-vertical .progress-bar {
+    background: #eee;
+}
+table {
+    width: 100%;
+}
+.dimension {
+    margin: 1.5em 0;
+}
+#mainContent .fright {
+    margin: 0;
+}
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+    color: #4b6a77;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+}
+.nav-tabs>li>a {
+    font-weight: 700;
+    font-size: 18px;
+    margin-right: 2px;
+    text-decoration: none;
+    line-height: 1.42857143;
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+}
+.nav-tabs>li>a:hover {
+    background: #eee;
+}
+.nav>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+}
+.nav-tabs>li {
+    float: left;
+    margin-bottom: -1px;
+}
+.nav>li {
+    position: relative;
+    display: block;
+}
+.nav-tabs {
+    border-bottom: 1px solid #ddd;
+}
+.nav {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+.btn-group-vertical>.btn-group:after, .btn-group-vertical>.btn-group:before, .btn-toolbar:after, .btn-toolbar:before, .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .dl-horizontal dd:after, .dl-horizontal dd:before, .form-horizontal .form-group:after, .form-horizontal .form-group:before, .modal-footer:after, .modal-footer:before, .modal-header:after, .modal-header:before, .nav:after, .nav:before, .navbar-collapse:after, .navbar-collapse:before, .navbar-header:after, .navbar-header:before, .navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before {
+    display: table;
+    content: " ";
+}
+.btn-group-vertical>.btn-group:after, .btn-toolbar:after, .clearfix:after, .container-fluid:after, .container:after, .dl-horizontal dd:after, .form-horizontal .form-group:after, .modal-footer:after, .modal-header:after, .nav:after, .navbar-collapse:after, .navbar-header:after, .navbar:after, .pager:after, .panel-body:after, .row:after {
+    clear: both;
+}
+.form-inline .form-control {
+    vertical-align: middle;
+}
+table a {
+    text-decoration: none;
+}
+table a:hover {
+    text-decoration: underline;
+}
+.subtle {
+    color: #aaa;
+}
+.has-error .form-control {
+    border-color: #a94442 !important;
+    color: #a94442 !important;
+    background: #EBCCCC !important;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+@media (max-width: 480px) {
+.section-hourly-users tr>* {
+    display: none;
+}
+.section-hourly-users tr>*:nth-child(2n+1) {
+    display: table-cell;
+}
+table thead {
+    display: none;
+}
+table tr>*:first-child{
+    display: block;
+    font-weight: bold;
+    overflow: hidden;
+}
+table .text-right {
+    display: inline;
+}
+table tr>*:nth-child(2):before {
+    content: 'Views: ';
+    font-weight: bold;
+}
+table tr>*:nth-child(3):before {
+    content: 'Sessions: ';
+    font-weight: bold;
+}
+table tr>*:nth-child(4):before {
+    content: 'Duration: ';
+    font-weight: bold;
+}
+}
