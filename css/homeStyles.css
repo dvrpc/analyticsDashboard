@@ -1,0 +1,48 @@
+/* general purpose */
+body{
+	position: static;
+	margin-top: 60px;
+}
+/* main search bar */
+#main-form{
+	text-align: center;
+	padding: 3% 0 0 5%;
+}
+.search-for-site{
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	font-size: 45px;
+	text-align: center;
+	padding: 2% 5% 2% 5%;
+}
+
+/* top 4-5 pages quick info */
+.top-pages{
+	padding: 2%;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+.top-page-box{
+	margin: 1% 1% 5% 1%;
+	padding: 1% 3% 1% 3%;
+	-webkit-box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.20);
+	-moz-box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.20);
+	box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.20);
+}
+
+/* information zone */
+.information{
+	font-size: large;
+	text-align: center;
+	padding: 5% 0 15% 0;
+	background-color: grey;
+}
+.information h1 {
+	text-align: center;
+}
+.information ul {
+	text-align: left;
+}

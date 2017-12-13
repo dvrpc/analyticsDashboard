@@ -24,8 +24,14 @@
 // We don't have realtime data unfortunately, so we can't get realtime active users. Below is a total count of today's users OR we could use the last hour of users from the Hourly query
 // Active Users: http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true
 
+function activeUsers(params) {
 
+}
+
+// main function 
 $(function () {
+
+    // Initial configureation of Start Date and End Date based of of current date
     var d = new Date()
     $('#input-end').val(d.toISOString().slice(0, 10))
     d.setMonth(new Date().getMonth() - 1)
@@ -36,12 +42,14 @@ $(function () {
     var stdD = -.00000000001
     var mean = -.000000001
 
+    // VISITORS BY HOUR BARS
     $('.section-hourly-users .progress-bar').each(function (i) {
         var x = (i / 24)
         var h = 1 / (( 1/( stdD * Math.sqrt(2 * Math.PI) ) ) * Math.pow(Math.E , -1 * Math.pow(x - mean, 2) / (2 * Math.pow(stdD,2))))
         $(this).height(150 - h * 10)
     })
 
+    // Toggles Top Pages and Top Downloads tabs
     $('.nav-tabs a').on('click', function (e) {
         e.preventDefault()
         $($(this).closest('.nav-tabs').find('li').removeClass('active').find('a').map(function () { return $(this).attr('href') }).toArray().join(',')).hide()
@@ -49,6 +57,7 @@ $(function () {
         $($(this).attr('href')).show()
     })
 
+    // User Toggles Start Date and End State
     $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
         if ($(this).val().length === 0 || isNaN(new Date($(this).val())) || new Date() - new Date($(this).val()) < 0) {
             $(this).closest('.form-group').addClass('has-error')
@@ -63,6 +72,7 @@ $(function () {
     })
     time_range()
 
+    // find the inputed Website Section and display the metrics for that particular page
     $('#input-path').on('change', function () {
         history.replaceState({section: $(this).val()}, '', '?section=' + $(this).val())
         update_table()
@@ -74,11 +84,14 @@ $(function () {
     })
 })
 
+
+// * Find the webpage the user searched for in Website Section 
 function getParameterByName(name) {
     var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 
+// Calculate and display how many users visted over the 30 days inbetween Start and End Date.
 function time_range() {
     var days = (new Date($('#input-end').val()) - new Date($('#input-start').val())) / 8.64e+7
     $('.time-range').text('over the ' + (new Date().toISOString().slice(0,10) == $('#input-end').val() ? 'last ' : 'selected ') + (days === 365 ? 'year' : days < 90 ? days % 7 === 0 ? days === 7 ? 'week' : days / 7 + ' weeks' : days + ' days' : ~~(days / 30) + ' months'))
@@ -100,6 +113,7 @@ function time_range() {
     $('.total-users').text(text)
 }
 
+// Update data tables to display data relevant to the page entered in Website Section
 function update_table() {
     $('table a').each(function () {
         var i = $('#input-path').val().length
