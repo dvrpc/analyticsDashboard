@@ -32,17 +32,46 @@ body{
 	-moz-box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.20);
 	box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.20);
 }
+.top-page-box:hover{
+	background: rgba(0, 0, 0, 0.2);
+}
 
 /* information zone */
 .information{
 	font-size: large;
 	text-align: center;
-	padding: 5% 0 15% 0;
-	background-color: grey;
+	padding: 5% 0 10% 0;
+	background-color: rgba(0, 0, 0, 0.2);
 }
-.information h1 {
+.information h1{
 	text-align: center;
+	font-size: 3em;
 }
-.information ul {
+.information h2{
+	font-size: 2em;
+}
+.information p{
+	font-size: 1.5em;
+}
+.information ul{
+	list-style: none;
+}
+.information li{
+	display: flex;
+	flex-direction: row;
+	justify-content: left;
+	align-items: center;
+}
+.information li h2{
 	text-align: left;
+}
+.information li p{
+	text-align: left;
+}
+
+/* contact-info */
+#contact{
+	background-color: #ddd;
+	padding: 7px 7px 7px 15px;
+	font-style: italic;
 }
