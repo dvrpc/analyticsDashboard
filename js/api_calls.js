@@ -24,11 +24,7 @@
 // We don't have realtime data unfortunately, so we can't get realtime active users. Below is a total count of today's users OR we could use the last hour of users from the Hourly query
 // Active Users: http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true
 
-function activeUsers(params) {
-
-}
-
-// main function 
+// main function
 $(function () {
 
     // Initial configureation of Start Date and End Date based of of current date
