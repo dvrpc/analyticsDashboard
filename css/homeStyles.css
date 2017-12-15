@@ -2,12 +2,17 @@
 body{
 	position: static;
 	margin-top: 60px;
+	overflow-x: hidden;
 }
 
 /* main search bar */
 #main-form{
 	text-align: center;
 	padding: 3% 0 0 5%;
+}
+#main-form button{
+	font-size: 45px;
+	margin-left: 1%;
 }
 .search-for-site{
 	border-top: none;
@@ -19,8 +24,10 @@ body{
 }
 
 /* top 4-5 pages quick info */
+#top-five-header{
+	text-align: center;
+}
 .top-pages{
-	padding: 2%;
 	display: flex;
 	flex-direction: row;
 	justify-content: center;

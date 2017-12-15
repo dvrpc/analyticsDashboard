@@ -24,22 +24,19 @@ function createCORSRequest(method, url) {
 		xhr.open(method, url)
 
 	// if CORS isn't supported by the browser
-	}else{
-		xhr = null
-		console.log('ERROR: CORS NOT SUPPORTED IN BROWSER')
-	}
+	}else{xhr = null}
 
 	return xhr
 }
 
 function getTopFive(url) {
 	const request = createCORSRequest('GET', url)
+	if (!request) throw new Error('CORS not supported')
 
 	// required headers to allow CORS
 	request.setRequestHeader('Access-Control-Allow-Origin', 'http://intranet.dvrpc.org/google/analytics')
 	request.setRequestHeader('Vary', 'Origin')
 
-	if (!getTopFive) throw new Error('CORS not supported')
 
 	// get a hold of the value and attach them to the cards
 	request.onload = function() {
