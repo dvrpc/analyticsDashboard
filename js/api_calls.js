@@ -10,6 +10,9 @@
 		sortByMetric: <bool>         // Only first metric sorted
 		sortByDimension: <bool>      // Only first dimension sorted
 		sortAscending: <bool>        // Default: false
+        pageSize: <number> // limits number of pages returned (ex. 5) RETURNS nextPageToken
+        pageToken: use nextPageToken from pageSize to get results
+
 	}
 */
 // Sample queries:
