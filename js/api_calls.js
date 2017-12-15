@@ -124,3 +124,5 @@ function update_table() {
         }
     })
 }
+
+console.log('passed the query ', localStorage["page"])

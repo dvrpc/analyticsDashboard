@@ -24,9 +24,6 @@ body{
 }
 
 /* top 4-5 pages quick info */
-#top-five-header{
-	text-align: center;
-}
 .top-pages{
 	display: flex;
 	flex-direction: row;
@@ -68,10 +65,12 @@ body{
 	width: 80%;
 	list-style: none;
 	color: #474f53;
-	background: #f9fafb;
 }
 .information li{
 	padding: 1% 0 1% 0;
+}
+.information li strong{
+	color: #368db3;
 }
 
 /* contact-info */

@@ -1,6 +1,5 @@
 // get a hold of the top five cards
 const topFive = document.querySelectorAll('.top-page-box')
-console.log('topFive is ', topFive)
 
 // paramaters to include in the url
 const startDate = new Date().toISOString().split('T')[0]
@@ -41,7 +40,7 @@ function getTopFive(url) {
 	// get a hold of the value and attach them to the cards
 	request.onload = function() {
 		const response = JSON.parse(request.response)
-		console.log('response result rows', response.result.rows)
+
 		// response.result.rows[index].dimensions = url (ex. '/' for homepage. so output string format will be `dvrpc.org/${val}`)
 		// response.result.rows[index].metrics[0].values[0] = pageviews
 		// response.result.rows[index].metrics[0].values[1] = sessions

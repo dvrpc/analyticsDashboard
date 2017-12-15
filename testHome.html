@@ -9,6 +9,7 @@
         <link href="https://www.dvrpc.org/css/apps.css" rel="stylesheet" type="text/css">
         <link href="./css//homeStyles.css" rel="stylesheet" type="text/css">
         <script defer src="./js/topFive.js"></script>
+        <script defer src="./js/pass_search.js"></script>
 	</head>
 
 	<body>
@@ -55,8 +56,8 @@
 
 		</div>
 
-		<form id="main-form">
-			<input value="www.dvrpc.org/" class="search-for-site" name="main-search" type="text">
+		<form id="main-form" action="drilldown.htm">
+			<input id="user-input" type="search" value="www.dvrpc.org/" class="search-for-site" name="main-search">
 			<button class="btn btn-primary" name="search">Search</button>
 		</form>
 		<div class="top-pages">
