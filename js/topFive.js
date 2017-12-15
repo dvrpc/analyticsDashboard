@@ -2,7 +2,7 @@
 const topFive = document.querySelectorAll('.top-page-box')
 
 // paramaters to include in the url
-const startDate = new Date().toISOString().split('T')[0]
+const startDate = new Date().toISOString().slice(0, 10)
 const endDate = 'tbd'
 const dimensions = 'ga:pagePath'
 const metrics = 'ga:pageviews,ga:sessions,ga:avgTimeOnPage'

@@ -15,17 +15,91 @@
 
 	}
 */
-// Sample queries:
+// remove www.dvrpc.org/ from input to just get 
+const path = localStorage["page"]
 
-// Top Pages: http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&sortByMetric=true
-// Content Drilldown: http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,^\/Transportation\/Safety\/.*$&sortByMetric=true
-// Top Downloads: http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:eventLabel&metric=ga:totalEvents,ga:uniqueEvents&sortByMetric=true&dimensionFilter=ga:eventAction,Download
-// Browsers: http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:browser&metric=ga:pageviews&sortByMetric=true
-// OS: http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:operatingSystem&metric=ga:pageviews&sortByMetric=true
-// Device Category: http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:deviceCategory&metric=ga:pageviews&sortByMetric=true
-// Hourly: http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true
+// Content Drilldown:
+const contentDrilldown = `http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
+// Top Downloads:
+const topDownloads = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:eventLabel&metric=ga:totalEvents,ga:uniqueEvents&sortByMetric=true&dimensionFilter=ga:eventAction,Download'
+// Browsers: 
+const browsers = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:browser&metric=ga:pageviews&sortByMetric=true'
+// OS: 
+const os = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:operatingSystem&metric=ga:pageviews&sortByMetric=true'
+// Device Category: 
+const deviceCategory = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:deviceCategory&metric=ga:pageviews&sortByMetric=true'
+// Hourly: 
+const hourly = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true'
 // We don't have realtime data unfortunately, so we can't get realtime active users. Below is a total count of today's users OR we could use the last hour of users from the Hourly query
-// Active Users: http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true
+// Active Users: 
+const activeUsers = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true'
+
+// set up the 
+function createCORSRequest(method, url) {
+    const xhr = new XMLHttpRequest()
+
+    // handle xmlhttprequest2 objects which have a withCredentials property (most use cases)
+    if('withCredentials' in xhr){
+        xhr.open(method, url, true)
+
+    // IE uses XDomainRequest objects to make CORS requests
+    }else if(typeof XDomainRequest != 'undefined'){
+        xhr = new XDomainRequest()
+        xhr.open(method, url)
+
+    // if CORS isn't supported by the browser
+    }else{xhr = null}
+
+    return xhr
+}
+
+function makeRequest(url) {
+    const request = createCORSRequest('GET', url)
+    if (!request) throw new Error('CORS not supported')
+
+    // required headers to allow CORS
+    request.setRequestHeader('Access-Control-Allow-Origin', 'http://intranet.dvrpc.org/google/analytics')
+    request.setRequestHeader('Vary', 'Origin')
+
+    request.onload = function() {
+        const response = JSON.parse(request.response)
+        console.log('response is ', response)
+        response
+    }
+
+    request.onerror = function() {
+        console.log('error making the request')
+    }
+
+    request.send()
+}
+
+/***** API calls happen here *****/
+// result of getContentDrilldown are the url/metrics for the given path + every path that chains off of it
+let getContentDrilldown = makeRequest(contentDrilldown)
+
+// result of getBrowsers is general overview of which browsers are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
+let getBrowsers = makeRequest(browsers)
+
+// results of getOS is a general overview of which OS is used site wide. NEEDS TO BE LIMITED TO PATH ONLY
+let getOS = makeRequest(os)
+
+// results of getDeviceCategory is a general overview of which devices are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
+let getDeviceCategory = makeRequest(deviceCategory)
+
+// returns pageviews in the past hour. results has rows from 02-23 and total which has total pageviews in the past day
+let getHourly = makeRequest(hourly)
+
+// returns number of sessions in the past day via result.rows[].metrics.values[] Values is an array but it's just a number? why?
+let getActiveUsers = makeRequest(activeUsers)
+
+// am I seriously going to have to rewrite makeRequest for every single one of the above functions in order to access the data?!?!
+
+function onlineToday() {
+    const text = document.querySelector('.active-users')
+    text.innerHTML 
+}
+
 
 // main function
 $(function () {
@@ -124,5 +198,3 @@ function update_table() {
         }
     })
 }
-
-console.log('passed the query ', localStorage["page"])
