@@ -25,6 +25,7 @@ body{
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;
+	text-align: center;
 }
 .top-page-box{
 	margin: 1% 1% 5% 1%;
@@ -36,6 +37,7 @@ body{
 .top-page-box:hover{
 	background: #e7df8b;
 }
+
 
 /* information zone */
 .information{

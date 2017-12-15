@@ -9,7 +9,7 @@ const dimensions = 'ga:pagePath'
 const metrics = 'ga:pageviews,ga:sessions,ga:avgTimeOnPage'
 
 // rn this gets every single page and takes a while. I only need the top 5
-const topPages = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=2017-12-15&dimension=${dimensions}&metric=${metrics}&sortByMetric=true`
+const topPages = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=2017-12-15&dimension=${dimensions}&metric=${metrics}&sortByMetric=true&pageSize=5`
 
 function createCORSRequest(method, url) {
 	const xhr = new XMLHttpRequest()
@@ -50,10 +50,10 @@ function getTopFive(url) {
 		// response.result.rows[index].metrics[0].values[1] = sessions
 		// response.result.rows[index].metrics[0].values[2] = avgTimeOnPage
 		topFive.forEach((card, index) => {
-			card.children[1].innerHTML = response.result.rows[index].metrics[0].values[0]
-			card.children[3].innerHTML = response.result.rows[index].metrics[0].values[1]
-			card.children[5].innerHTML = Math.floor(response.result.rows[index].metrics[0].values[2]) + ' seconds'
-			card.children[7].innerHTML += response.result.rows[index].dimensions
+			card.children[0].innerHTML += response.result.rows[index].dimensions
+			card.children[3].innerHTML = response.result.rows[index].metrics[0].values[0]
+			card.children[5].innerHTML = response.result.rows[index].metrics[0].values[1]
+			card.children[7].innerHTML = Math.floor(response.result.rows[index].metrics[0].values[2]) + ' seconds'
 		})
 	}
 
