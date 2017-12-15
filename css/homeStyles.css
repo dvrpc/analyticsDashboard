@@ -55,7 +55,7 @@ body{
 }
 .information ul{
 	margin: 0 auto;
-	padding: 3% 0 3% 0;
+	padding: 3% 1% 3% 1%;
 	width: 80%;
 	list-style: none;
 	color: #474f53;
@@ -71,3 +71,5 @@ body{
 	padding: 7px 7px 7px 15px;
 	font-style: italic;
 }
+
+/* media queries */
