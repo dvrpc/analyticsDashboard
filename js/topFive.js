@@ -40,10 +40,6 @@ function getTopFive(url) {
 	request.onload = function() {
 		const response = JSON.parse(request.response)
 
-		// response.result.rows[index].dimensions = url (ex. '/' for homepage. so output string format will be `dvrpc.org/${val}`)
-		// response.result.rows[index].metrics[0].values[0] = pageviews
-		// response.result.rows[index].metrics[0].values[1] = sessions
-		// response.result.rows[index].metrics[0].values[2] = avgTimeOnPage
 		topFive.forEach((card, index) => {
 			card.children[0].innerHTML += response.result.rows[index].dimensions
 			card.children[3].innerHTML = response.result.rows[index].metrics[0].values[0]

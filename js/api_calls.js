@@ -18,8 +18,12 @@
 
 // remove www.dvrpc.org/ from input to just get 
 const path = localStorage["page"]
+// start and end date jawns
+const startDate = ''
+const endDate = ''
 
-// TODO: look into combining some of these - already tried browsers + deviceCategory and the result wasn't very workable 
+// TODO: UPDATE THE START AND END DATE TO REFLECT WHAT'S ON THE START/END DATE DROPDOWN IN THE PAGE! URGENT!
+        //look into combining some of these - already tried browsers + deviceCategory and the result wasn't very workable 
 
 // Content Drilldown:
 const contentDrilldown = `http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
@@ -79,7 +83,7 @@ function drillDownRequest(request) {
 /*    const response = JSON.parse(request.response)
     console.log('response is ', response)*/
 }
-const getContentDrilldown = makeRequest(contentDrilldown, drillDownRequest)
+makeRequest(contentDrilldown, drillDownRequest)
 
 
 // variables and functions for the DEVICES, BROWSERS and OPERATING SYSTEMS sections
@@ -107,7 +111,29 @@ function buildTechSection(index, rank, row, total, techName, techPercent, techBa
     techBar[index].textContent = rank.percent + '%'
     techBar[index].style.width = `${rank.percent}%`
 }
+function deviceRequest(request) {
+    const response = JSON.parse(request.response)
+    const result = response.result
 
+    let total = result.totals[0].values[0]
+    let first = {percent: 0, technology: ''}
+    let second = {percent: 0, technology: ''}
+    let third = {percent: 0, technology: ''}
+
+    result.rows.forEach(function(row, index) {
+        switch(index){
+            case 0:
+                buildTechSection(index, first, row, total, deviceName, devicePercentage, deviceProgressBar)
+                break
+            case 1:
+                buildTechSection(index, second, row, total, deviceName, devicePercentage, deviceProgressBar)
+                break
+            case 2:
+                buildTechSection(index, third, row, total, deviceName, devicePercentage, deviceProgressBar)
+                break
+        }
+    })
+}
 function browserRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
@@ -139,8 +165,6 @@ function browserRequest(request) {
         }
     })
 }
-const getBrowsers = makeRequest(browsers, browserRequest)
-
 function osRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
@@ -172,52 +196,49 @@ function osRequest(request) {
         }
     })
 }
-const getOS = makeRequest(os, osRequest)
 
-function deviceRequest(request) {
-    const response = JSON.parse(request.response)
-    const result = response.result
-
-    let total = result.totals[0].values[0]
-    let first = {percent: 0, technology: ''}
-    let second = {percent: 0, technology: ''}
-    let third = {percent: 0, technology: ''}
-
-    result.rows.forEach(function(row, index) {
-        switch(index){
-            case 0:
-                buildTechSection(index, first, row, total, deviceName, devicePercentage, deviceProgressBar)
-                break
-            case 1:
-                buildTechSection(index, second, row, total, deviceName, devicePercentage, deviceProgressBar)
-                break
-            case 2:
-                buildTechSection(index, third, row, total, deviceName, devicePercentage, deviceProgressBar)
-                break
-        }
-    })
-}
-const getDeviceCategory = makeRequest(deviceCategory, deviceRequest)
+makeRequest(deviceCategory, deviceRequest)
+makeRequest(browsers, browserRequest)
+makeRequest(os, osRequest)
 
 
-
-// returns pageviews in the past hour. results has rows from 02-23 and total which has total pageviews in the past day
+// returns pageviews in the past hour. results dimensions (time of day) and metrics values (# of visitors)
 function hourlyRequest(request) {
-    // const response = JSON.parse(request.response)
-    //console.log('response is ', response)
+    const response = JSON.parse(request.response)
+    const rows = response.result.rows
+    console.log('rows is ', rows)
+    const bar = document.querySelectorAll('.progress-vertical')
+    console.log('bar is ', bar)
+
+    // hours: result[n].dimensions (string!)
+    // visitors: result[n].metrics[0].values[0] (string!)
+    // DUMMY DATA: &nbsp; used to be what worked the progress bars DOWN from being full 
+
+    // any hours with 0 viewers will NOT return, so must be filled in
+    for(var i = 0; i <24; i++){
+        // == for that no-type-conversion javascript black magic
+        // TODO: figure out how to adjust the height of the bars. style.height is NOT the answer
+        if(rows[i] /*&& rows[i].dimensions[0] == i*/){
+            console.log('rows at i ', rows[i].dimensions[0])
+            console.log('comparison at i ', rows[i].dimensions[0] == i)
+        }else{
+            console.log('in the empty hours at i ', i)
+        }
+    }
 }
-const getHourly = makeRequest(hourly, hourlyRequest)
+makeRequest(hourly, hourlyRequest)
 
 
-// returns number of sessions in the past day via result.totals[0].values[0]
+// variables and functions for the people online today section
 function activeRequest(request) {
     const text = document.querySelector('.active-users')
     const response = JSON.parse(request.response)
     text.textContent = response.result.totals[0].values[0]
 }
-const getActiveUsers = makeRequest(activeUsers, activeRequest)
+makeRequest(activeUsers, activeRequest)
 
-// TODO: wrap all of the makeRequest functions in a promise and then execute them with promise.all for speeeeed purposes 
+// TODO: wrap all of the makeRequest functions in a promise and then execute them with promise.all for speeeeed purposes
+// maybe. I don't know if that's actually a great idea. TBD. 
 
 
 // main function
@@ -235,11 +256,11 @@ $(function () {
     var mean = -.000000001
 
     // VISITORS BY HOUR BARS
-    $('.section-hourly-users .progress-bar').each(function (i) {
+/*    $('.section-hourly-users .progress-bar').each(function (i) {
         var x = (i / 24)
         var h = 1 / (( 1/( stdD * Math.sqrt(2 * Math.PI) ) ) * Math.pow(Math.E , -1 * Math.pow(x - mean, 2) / (2 * Math.pow(stdD,2))))
         $(this).height(150 - h * 10)
-    })
+    })*/
 
     // Toggles Top Pages and Top Downloads tabs
     $('.nav-tabs a').on('click', function (e) {
