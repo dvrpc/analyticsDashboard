@@ -18,6 +18,8 @@
 // remove www.dvrpc.org/ from input to just get 
 const path = localStorage["page"]
 
+// TODO: look into combining some of these - already tried browsers + deviceCategory and the result wasn't very workable 
+
 // Content Drilldown:
 const contentDrilldown = `http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // Top Downloads:
@@ -83,36 +85,64 @@ function browsersRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
 
-    let total = result.totals[0].values[0]
-    let first = {number: 0, browser: ''}
-    let second = {number: 0, browser: ''}
-    let third = {number: 0, browser: ''}
-    let fourth = {number: 0, browser: ''}
-    let other = {number: 0, browser: ''}
+    const browserName = document.querySelectorAll('.browser p')
+    const percentage = document.querySelectorAll('.browser-percent')
+    const progressBar = document.querySelectorAll('.progress-bar-browser')
 
+    let total = result.totals[0].values[0]
+    let first = {percent: 0, browser: ''}
+    let second = {percent: 0, browser: ''}
+    let third = {percent: 0, browser: ''}
+    let fourth = {percent: 0, browser: ''}
+    let other = {percent: 0, browser: 'Other'}
+
+    // eventually, replace the repeated HTML settings with a helper function that does all that stuff
     result.rows.forEach(function(row, index) {
-        // find the top four browsers
         switch(index){
             case 0:
-                first.number = row.metrics[0].values[0]
+                first.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
                 first.browser = row.dimensions[0]
+                browserName[0].textContent = first.browser
+                percentage[0].textContent = first.percent + '%'
+                progressBar[0].textContent = first.percent + '%'
+                progressBar[0].style.width = `${first.percent}%`
                 break
             case 1:
-                second.number = row.metrics[0].values[0]
+                second.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
                 second.browser = row.dimensions[0]
+                browserName[1].textContent = second.browser
+                percentage[1].textContent = second.percent + '%'
+                progressBar[1].textContent = second.percent + '%'
+                progressBar[1].style.width = `${second.percent}%`
                 break
             case 2:
-                third.number = row.metrics[0].values[0]
+                third.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
                 third.browser = row.dimensions[0]
+                browserName[2].textContent = third.browser
+                percentage[2].textContent = third.percent + '%'
+                progressBar[2].textContent = third.percent + '%'
+                progressBar[2].style.width = `${third.percent}%`
                 break
             case 3:
-                fourth.number = row.metrics[0].values[0]
+                fourth.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
                 fourth.browser = row.dimensions[0]
+                browserName[3].textContent = fourth.browser
+                percentage[3].textContent = fourth.percent + '%'
+                progressBar[3].textContent = fourth.percent + '%'
+                progressBar[3].style.width = `${fourth.percent}%`
+                break
+            default:
+                other.percent += Math.floor((row.metrics[0].values[0] / total) * 100)
+                browserName[4].textContent = other.browser
+                percentage[4].textContent = other.percent + '%'
+                progressBar[4].textContent = other.percent + '%'
+                progressBar[4].style.width = `${other.percent}%`
                 break
         }
     })
 
-    // grab a hold of and populate browser tabs w/correct information 
+    console.log('what is other ', other)
+
 }
 const getBrowsers = makeRequest(browsers, browsersRequest)
 
