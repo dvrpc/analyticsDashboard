@@ -82,21 +82,27 @@ const getContentDrilldown = makeRequest(contentDrilldown, drillDownRequest)
 
 
 // functions & variables to build the BROWSERS section. Currently does for all pages, NEEDS TO BE LIMITED TO CURRENT PATH ONLY
+// for the DEVICES, BROWSERS and OPERATING SYSTEMS sections
+
 const browserName = document.querySelectorAll('.browser p')
 const percentage = document.querySelectorAll('.browser-percent')
 const progressBar = document.querySelectorAll('.progress-bar-browser')
 
-function buildBrowser(index, rank, row, total){
+const osName = document.querySelectorAll('.os p')
+const osPercentage = document.querySelectorAll('.os-percent')
+const osProgressBar = document.querySelectorAll('.progress-bar-os')
+
+function buildTechSection(index, rank, row, total, techName, techPercent, techBar){
     if(index < 4){
         rank.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
-        rank.browser = row.dimensions[0]
+        rank.technology = row.dimensions[0]
     } else{
         rank.percent += Math.floor((row.metrics[0].values[0] / total) * 100)
     }
-    browserName[index].textContent = rank.browser
-    percentage[index].textContent = rank.percent + '%'
-    progressBar[index].textContent = rank.percent + '%'
-    progressBar[index].style.width = `${rank.percent}%`
+    techName[index].textContent = rank.technology
+    techPercent[index].textContent = rank.percent + '%'
+    techBar[index].textContent = rank.percent + '%'
+    techBar[index].style.width = `${rank.percent}%`
 }
 
 function browsersRequest(request) {
@@ -104,28 +110,28 @@ function browsersRequest(request) {
     const result = response.result
 
     let total = result.totals[0].values[0]
-    let first = {percent: 0, browser: ''}
-    let second = {percent: 0, browser: ''}
-    let third = {percent: 0, browser: ''}
-    let fourth = {percent: 0, browser: ''}
-    let other = {percent: 0, browser: 'Other'}
+    let first = {percent: 0, technology: ''}
+    let second = {percent: 0, technology: ''}
+    let third = {percent: 0, technology: ''}
+    let fourth = {percent: 0, technology: ''}
+    let other = {percent: 0, technology: 'Other'}
 
     result.rows.forEach(function(row, index) {
         switch(index){
             case 0:
-                buildBrowser(index, first, row, total)
+                buildTechSection(index, first, row, total, browserName, percentage, progressBar)
                 break
             case 1:
-                buildBrowser(index, second, row, total)
+                buildTechSection(index, second, row, total, browserName, percentage, progressBar)
                 break
             case 2:
-                buildBrowser(index, third, row, total)
+                buildTechSection(index, third, row, total, browserName, percentage, progressBar)
                 break
             case 3:
-                buildBrowser(index, fourth, row, total)
+                buildTechSection(index, fourth, row, total, browserName, percentage, progressBar)
                 break
             default:
-                buildBrowser(4, other, row, total)
+                buildTechSection(4, other, row, total, browserName, percentage, progressBar)
                 break
         }
     })
@@ -133,10 +139,38 @@ function browsersRequest(request) {
 const getBrowsers = makeRequest(browsers, browsersRequest)
 
 
-// results of getOS is a general overview of which OS is used site wide. NEEDS TO BE LIMITED TO PATH ONLY
+// functions & variables to build the OS section. Currently does for al pages, NEEDS TO BE LIMITED TO CURRENT PATH ONLY
+
 function osRequest(request) {
-    // const response = JSON.parse(request.response)
-    //console.log('response is ', response)
+    const response = JSON.parse(request.response)
+    const result = response.result
+
+    let total = result.totals[0].values[0]
+    let first = {percent: 0, technology: ''}
+    let second = {percent: 0, technology: ''}
+    let third = {percent: 0, technology: ''}
+    let fourth = {percent: 0, technology: ''}
+    let other = {percent: 0, technology: 'Other'}
+
+    result.rows.forEach(function(row, index) {
+        switch(index){
+            case 0:
+                buildTechSection(index, first, row, total, osName, osPercentage, osProgressBar)
+                break
+            case 1:
+                buildTechSection(index, second, row, total, osName, osPercentage, osProgressBar)
+                break
+            case 2:
+                buildTechSection(index, third, row, total, osName, osPercentage, osProgressBar)
+                break
+            case 3:
+                buildTechSection(index, fourth, row, total, osName, osPercentage, osProgressBar)
+                break
+            default:
+                buildTechSection(4, other, row, total, osName, osPercentage, osProgressBar)
+                break
+        }
+    })
 }
 const getOS = makeRequest(os, osRequest)
 
