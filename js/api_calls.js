@@ -81,9 +81,7 @@ function drillDownRequest(request) {
 const getContentDrilldown = makeRequest(contentDrilldown, drillDownRequest)
 
 
-// functions & variables to build the BROWSERS section. Currently does for all pages, NEEDS TO BE LIMITED TO CURRENT PATH ONLY
-// for the DEVICES, BROWSERS and OPERATING SYSTEMS sections
-
+// variables and functions for the DEVICES, BROWSERS and OPERATING SYSTEMS sections
 const browserName = document.querySelectorAll('.browser p')
 const percentage = document.querySelectorAll('.browser-percent')
 const progressBar = document.querySelectorAll('.progress-bar-browser')
@@ -91,6 +89,10 @@ const progressBar = document.querySelectorAll('.progress-bar-browser')
 const osName = document.querySelectorAll('.os p')
 const osPercentage = document.querySelectorAll('.os-percent')
 const osProgressBar = document.querySelectorAll('.progress-bar-os')
+
+const deviceName = document.querySelectorAll('.device p')
+const devicePercentage = document.querySelectorAll('.device-percent')
+const deviceProgressBar = document.querySelectorAll('.progress-bar-device')
 
 function buildTechSection(index, rank, row, total, techName, techPercent, techBar){
     if(index < 4){
@@ -138,9 +140,6 @@ function browsersRequest(request) {
 }
 const getBrowsers = makeRequest(browsers, browsersRequest)
 
-
-// functions & variables to build the OS section. Currently does for al pages, NEEDS TO BE LIMITED TO CURRENT PATH ONLY
-
 function osRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
@@ -177,10 +176,30 @@ const getOS = makeRequest(os, osRequest)
 
 // results of getDeviceCategory is a general overview of which devices are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
 function deviceRequest(request) {
-    // const response = JSON.parse(request.response)
-    //console.log('response is ', response)
+    const response = JSON.parse(request.response)
+    const result = response.result
+
+    let total = result.totals[0].values[0]
+    let first = {percent: 0, technology: ''}
+    let second = {percent: 0, technology: ''}
+    let third = {percent: 0, technology: ''}
+
+    result.rows.forEach(function(row, index) {
+        switch(index){
+            case 0:
+                buildTechSection(index, first, row, total, deviceName, devicePercentage, deviceProgressBar)
+                break
+            case 1:
+                buildTechSection(index, second, row, total, deviceName, devicePercentage, deviceProgressBar)
+                break
+            case 2:
+                buildTechSection(index, third, row, total, deviceName, devicePercentage, deviceProgressBar)
+                break
+        }
+    })
 }
 const getDeviceCategory = makeRequest(deviceCategory, deviceRequest)
+
 
 
 // returns pageviews in the past hour. results has rows from 02-23 and total which has total pageviews in the past day
