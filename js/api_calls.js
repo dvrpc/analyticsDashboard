@@ -15,6 +15,7 @@
 
 	}
 */
+
 // remove www.dvrpc.org/ from input to just get 
 const path = localStorage["page"]
 
@@ -62,7 +63,7 @@ function makeRequest(url, callback) {
     request.setRequestHeader('Access-Control-Allow-Origin', 'http://intranet.dvrpc.org/google/analytics')
     request.setRequestHeader('Vary', 'Origin')
 
-    request.onload = function() { callback(request) }
+    request.onload = function() {callback(request)}
 
     request.onerror = function() {
         console.log('error making the request')
@@ -83,8 +84,8 @@ const getContentDrilldown = makeRequest(contentDrilldown, drillDownRequest)
 
 // variables and functions for the DEVICES, BROWSERS and OPERATING SYSTEMS sections
 const browserName = document.querySelectorAll('.browser p')
-const percentage = document.querySelectorAll('.browser-percent')
-const progressBar = document.querySelectorAll('.progress-bar-browser')
+const browserPercentage = document.querySelectorAll('.browser-percent')
+const browserProgressBar = document.querySelectorAll('.progress-bar-browser')
 
 const osName = document.querySelectorAll('.os p')
 const osPercentage = document.querySelectorAll('.os-percent')
@@ -107,7 +108,7 @@ function buildTechSection(index, rank, row, total, techName, techPercent, techBa
     techBar[index].style.width = `${rank.percent}%`
 }
 
-function browsersRequest(request) {
+function browserRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
 
@@ -121,24 +122,24 @@ function browsersRequest(request) {
     result.rows.forEach(function(row, index) {
         switch(index){
             case 0:
-                buildTechSection(index, first, row, total, browserName, percentage, progressBar)
+                buildTechSection(index, first, row, total, browserName, browserPercentage, browserProgressBar)
                 break
             case 1:
-                buildTechSection(index, second, row, total, browserName, percentage, progressBar)
+                buildTechSection(index, second, row, total, browserName, browserPercentage, browserProgressBar)
                 break
             case 2:
-                buildTechSection(index, third, row, total, browserName, percentage, progressBar)
+                buildTechSection(index, third, row, total, browserName, browserPercentage, browserProgressBar)
                 break
             case 3:
-                buildTechSection(index, fourth, row, total, browserName, percentage, progressBar)
+                buildTechSection(index, fourth, row, total, browserName, browserPercentage, browserProgressBar)
                 break
             default:
-                buildTechSection(4, other, row, total, browserName, percentage, progressBar)
+                buildTechSection(4, other, row, total, browserName, browserPercentage, browserProgressBar)
                 break
         }
     })
 }
-const getBrowsers = makeRequest(browsers, browsersRequest)
+const getBrowsers = makeRequest(browsers, browserRequest)
 
 function osRequest(request) {
     const response = JSON.parse(request.response)
@@ -173,8 +174,6 @@ function osRequest(request) {
 }
 const getOS = makeRequest(os, osRequest)
 
-
-// results of getDeviceCategory is a general overview of which devices are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
 function deviceRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
@@ -210,11 +209,11 @@ function hourlyRequest(request) {
 const getHourly = makeRequest(hourly, hourlyRequest)
 
 
-// returns number of sessions in the past day via result.rows[].metrics.values[] Values is an array but it's just a number? why?
+// returns number of sessions in the past day via result.totals[0].values[0]
 function activeRequest(request) {
     const text = document.querySelector('.active-users')
-    // const response = JSON.parse(request.response)
-    //console.log('response is ', response)
+    const response = JSON.parse(request.response)
+    text.textContent = response.result.totals[0].values[0]
 }
 const getActiveUsers = makeRequest(activeUsers, activeRequest)
 
