@@ -80,14 +80,28 @@ function drillDownRequest(request) {
 }
 const getContentDrilldown = makeRequest(contentDrilldown, drillDownRequest)
 
-// result of getBrowsers is general overview of which browsers are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
+
+// functions & variables to build the BROWSERS section. Currently does for all pages, NEEDS TO BE LIMITED TO CURRENT PATH ONLY
+const browserName = document.querySelectorAll('.browser p')
+const percentage = document.querySelectorAll('.browser-percent')
+const progressBar = document.querySelectorAll('.progress-bar-browser')
+
+function buildBrowser(index, rank, row, total){
+    if(index < 4){
+        rank.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
+        rank.browser = row.dimensions[0]
+    } else{
+        rank.percent += Math.floor((row.metrics[0].values[0] / total) * 100)
+    }
+    browserName[index].textContent = rank.browser
+    percentage[index].textContent = rank.percent + '%'
+    progressBar[index].textContent = rank.percent + '%'
+    progressBar[index].style.width = `${rank.percent}%`
+}
+
 function browsersRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
-
-    const browserName = document.querySelectorAll('.browser p')
-    const percentage = document.querySelectorAll('.browser-percent')
-    const progressBar = document.querySelectorAll('.progress-bar-browser')
 
     let total = result.totals[0].values[0]
     let first = {percent: 0, browser: ''}
@@ -96,55 +110,28 @@ function browsersRequest(request) {
     let fourth = {percent: 0, browser: ''}
     let other = {percent: 0, browser: 'Other'}
 
-    // eventually, replace the repeated HTML settings with a helper function that does all that stuff
     result.rows.forEach(function(row, index) {
         switch(index){
             case 0:
-                first.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
-                first.browser = row.dimensions[0]
-                browserName[0].textContent = first.browser
-                percentage[0].textContent = first.percent + '%'
-                progressBar[0].textContent = first.percent + '%'
-                progressBar[0].style.width = `${first.percent}%`
+                buildBrowser(index, first, row, total)
                 break
             case 1:
-                second.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
-                second.browser = row.dimensions[0]
-                browserName[1].textContent = second.browser
-                percentage[1].textContent = second.percent + '%'
-                progressBar[1].textContent = second.percent + '%'
-                progressBar[1].style.width = `${second.percent}%`
+                buildBrowser(index, second, row, total)
                 break
             case 2:
-                third.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
-                third.browser = row.dimensions[0]
-                browserName[2].textContent = third.browser
-                percentage[2].textContent = third.percent + '%'
-                progressBar[2].textContent = third.percent + '%'
-                progressBar[2].style.width = `${third.percent}%`
+                buildBrowser(index, third, row, total)
                 break
             case 3:
-                fourth.percent = Math.floor((row.metrics[0].values[0] / total) * 100)
-                fourth.browser = row.dimensions[0]
-                browserName[3].textContent = fourth.browser
-                percentage[3].textContent = fourth.percent + '%'
-                progressBar[3].textContent = fourth.percent + '%'
-                progressBar[3].style.width = `${fourth.percent}%`
+                buildBrowser(index, fourth, row, total)
                 break
             default:
-                other.percent += Math.floor((row.metrics[0].values[0] / total) * 100)
-                browserName[4].textContent = other.browser
-                percentage[4].textContent = other.percent + '%'
-                progressBar[4].textContent = other.percent + '%'
-                progressBar[4].style.width = `${other.percent}%`
+                buildBrowser(4, other, row, total)
                 break
         }
     })
-
-    console.log('what is other ', other)
-
 }
 const getBrowsers = makeRequest(browsers, browsersRequest)
+
 
 // results of getOS is a general overview of which OS is used site wide. NEEDS TO BE LIMITED TO PATH ONLY
 function osRequest(request) {
@@ -153,6 +140,7 @@ function osRequest(request) {
 }
 const getOS = makeRequest(os, osRequest)
 
+
 // results of getDeviceCategory is a general overview of which devices are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
 function deviceRequest(request) {
     // const response = JSON.parse(request.response)
@@ -160,12 +148,14 @@ function deviceRequest(request) {
 }
 const getDeviceCategory = makeRequest(deviceCategory, deviceRequest)
 
+
 // returns pageviews in the past hour. results has rows from 02-23 and total which has total pageviews in the past day
 function hourlyRequest(request) {
     // const response = JSON.parse(request.response)
     //console.log('response is ', response)
 }
 const getHourly = makeRequest(hourly, hourlyRequest)
+
 
 // returns number of sessions in the past day via result.rows[].metrics.values[] Values is an array but it's just a number? why?
 function activeRequest(request) {
