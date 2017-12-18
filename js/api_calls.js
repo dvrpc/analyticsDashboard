@@ -60,7 +60,7 @@ function makeRequest(url, callback) {
     request.setRequestHeader('Access-Control-Allow-Origin', 'http://intranet.dvrpc.org/google/analytics')
     request.setRequestHeader('Vary', 'Origin')
 
-    request.onload = callback(request)
+    request.onload = function() { callback(request) }
 
     request.onerror = function() {
         console.log('error making the request')
@@ -72,30 +72,78 @@ function makeRequest(url, callback) {
 /***** API calls happen here *****/
 
 // result of getContentDrilldown are the url/metrics for the given path + every path that chains off of it
-function drillDown(request) {
-    console.log('request is ', request)
-    const response = JSON.parse(request.response)
-    console.log('response is ', response)
+function drillDownRequest(request) {
+/*    const response = JSON.parse(request.response)
+    console.log('response is ', response)*/
 }
-let getContentDrilldown = makeRequest(contentDrilldown, drillDown)
+const getContentDrilldown = makeRequest(contentDrilldown, drillDownRequest)
 
 // result of getBrowsers is general overview of which browsers are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
-let getBrowsers = makeRequest(browsers)
+function browsersRequest(request) {
+    const response = JSON.parse(request.response)
+    const result = response.result
+
+    let total = result.totals[0].values[0]
+    let first = {number: 0, browser: ''}
+    let second = {number: 0, browser: ''}
+    let third = {number: 0, browser: ''}
+    let fourth = {number: 0, browser: ''}
+    let other = {number: 0, browser: ''}
+
+    result.rows.forEach(function(row, index) {
+        // find the top four browsers
+        switch(index){
+            case 0:
+                first.number = row.metrics[0].values[0]
+                first.browser = row.dimensions[0]
+                break
+            case 1:
+                second.number = row.metrics[0].values[0]
+                second.browser = row.dimensions[0]
+                break
+            case 2:
+                third.number = row.metrics[0].values[0]
+                third.browser = row.dimensions[0]
+                break
+            case 3:
+                fourth.number = row.metrics[0].values[0]
+                fourth.browser = row.dimensions[0]
+                break
+        }
+    })
+
+    // grab a hold of and populate browser tabs w/correct information 
+}
+const getBrowsers = makeRequest(browsers, browsersRequest)
 
 // results of getOS is a general overview of which OS is used site wide. NEEDS TO BE LIMITED TO PATH ONLY
-let getOS = makeRequest(os)
+function osRequest(request) {
+    // const response = JSON.parse(request.response)
+    //console.log('response is ', response)
+}
+const getOS = makeRequest(os, osRequest)
 
 // results of getDeviceCategory is a general overview of which devices are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
-let getDeviceCategory = makeRequest(deviceCategory)
+function deviceRequest(request) {
+    // const response = JSON.parse(request.response)
+    //console.log('response is ', response)
+}
+const getDeviceCategory = makeRequest(deviceCategory, deviceRequest)
 
 // returns pageviews in the past hour. results has rows from 02-23 and total which has total pageviews in the past day
-let getHourly = makeRequest(hourly)
+function hourlyRequest(request) {
+    // const response = JSON.parse(request.response)
+    //console.log('response is ', response)
+}
+const getHourly = makeRequest(hourly, hourlyRequest)
 
 // returns number of sessions in the past day via result.rows[].metrics.values[] Values is an array but it's just a number? why?
-function activeUsers() {
+function activeRequest(request) {
     const text = document.querySelector('.active-users')
+    // const response = JSON.parse(request.response)
+    //console.log('response is ', response)
 }
-let getActiveUsers = makeRequest(activeUsers)
+const getActiveUsers = makeRequest(activeUsers, activeRequest)
 
 // TODO: wrap all of the makeRequest functions in a promise and then execute them with promise.all for speeeeed purposes 
 
