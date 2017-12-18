@@ -34,7 +34,6 @@ const hourly = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&
 // Active Users: 
 const activeUsers = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true'
 
-// set up the 
 function createCORSRequest(method, url) {
     const xhr = new XMLHttpRequest()
 
@@ -53,7 +52,7 @@ function createCORSRequest(method, url) {
     return xhr
 }
 
-function makeRequest(url) {
+function makeRequest(url, callback) {
     const request = createCORSRequest('GET', url)
     if (!request) throw new Error('CORS not supported')
 
@@ -61,11 +60,7 @@ function makeRequest(url) {
     request.setRequestHeader('Access-Control-Allow-Origin', 'http://intranet.dvrpc.org/google/analytics')
     request.setRequestHeader('Vary', 'Origin')
 
-    request.onload = function() {
-        const response = JSON.parse(request.response)
-        console.log('response is ', response)
-        response
-    }
+    request.onload = callback(request)
 
     request.onerror = function() {
         console.log('error making the request')
@@ -75,8 +70,14 @@ function makeRequest(url) {
 }
 
 /***** API calls happen here *****/
+
 // result of getContentDrilldown are the url/metrics for the given path + every path that chains off of it
-let getContentDrilldown = makeRequest(contentDrilldown)
+function drillDown(request) {
+    console.log('request is ', request)
+    const response = JSON.parse(request.response)
+    console.log('response is ', response)
+}
+let getContentDrilldown = makeRequest(contentDrilldown, drillDown)
 
 // result of getBrowsers is general overview of which browsers are used site wide. NEEDS TO BE LIMITED TO PATH ONLY
 let getBrowsers = makeRequest(browsers)
@@ -91,14 +92,12 @@ let getDeviceCategory = makeRequest(deviceCategory)
 let getHourly = makeRequest(hourly)
 
 // returns number of sessions in the past day via result.rows[].metrics.values[] Values is an array but it's just a number? why?
+function activeUsers() {
+    const text = document.querySelector('.active-users')
+}
 let getActiveUsers = makeRequest(activeUsers)
 
-// am I seriously going to have to rewrite makeRequest for every single one of the above functions in order to access the data?!?!
-
-function onlineToday() {
-    const text = document.querySelector('.active-users')
-    text.innerHTML 
-}
+// TODO: wrap all of the makeRequest functions in a promise and then execute them with promise.all for speeeeed purposes 
 
 
 // main function

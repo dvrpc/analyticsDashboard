@@ -1,14 +1,13 @@
 // get a hold of the top five cards
 const topFive = document.querySelectorAll('.top-page-box')
 
-// paramaters to include in the url
-const startDate = new Date().toISOString().slice(0, 10)
-const endDate = 'tbd'
+// looking for todays top five, so StartDate and EndDate are both today's date
+const date = new Date().toISOString().slice(0, 10)
+
 const dimensions = 'ga:pagePath'
 const metrics = 'ga:pageviews,ga:sessions,ga:avgTimeOnPage'
 
-// rn this gets every single page and takes a while. I only need the top 5
-const topPages = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=2017-12-15&dimension=${dimensions}&metric=${metrics}&sortByMetric=true&pageSize=5`
+const topPages = `http://intranet.dvrpc.org/google/analytics?startDate=${date}&endDate=${date}&dimension=${dimensions}&metric=${metrics}&sortByMetric=true&pageSize=5`
 
 function createCORSRequest(method, url) {
 	const xhr = new XMLHttpRequest()
