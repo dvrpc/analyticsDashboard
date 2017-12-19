@@ -206,7 +206,6 @@ makeRequest(os, osRequest)
 function hourlyRequest(request) {
     const response = JSON.parse(request.response)
     const max = response.result.maximums[0].values[0]
-    console.log('max visitors in a given hour ', max)
     const rows = response.result.rows
     const bar = document.querySelectorAll('.progress-vertical')
 
@@ -233,16 +232,16 @@ function activeRequest(request) {
     const response = JSON.parse(request.response)
     text.textContent = response.result.totals[0].values[0]
 }
-makeRequest(activeUsers, activeRequest)
+makeRequest(activeUsers, activeRequest) 
 
-// TODO: wrap all of the makeRequest functions in a promise and then execute them with promise.all for speeeeed purposes
-// maybe. I don't know if that's actually a great idea. TBD. 
+// TODO: put every makeRequest function in a main function that executes onpage load, whenever start/end date are updated
+// and whenever a new website section is typed into the search bar
 
 
 // main function
 $(function () {
 
-    // Initial configureation of Start Date and End Date based of of current date
+    // Initial configuration of Start Date and End Date based of of current date
     var d = new Date()
     $('#input-end').val(d.toISOString().slice(0, 10))
     d.setMonth(new Date().getMonth() - 1)
