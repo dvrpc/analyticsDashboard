@@ -50,8 +50,7 @@ body{
 	background: rgba(0, 0, 0, 0.3);
 }
 .information h1{
-	font-size: 3.5em;
-	padding-bottom: 15px;
+	font-size: 4.2em;
 }
 .information hr{
 	margin: 0 auto;
@@ -66,18 +65,27 @@ body{
 th{
 	text-align: left;
 	font-size: 1.6em;
+	background: #4b6a77;
+	color: #f9fafb;
+}
+td{
+	padding: 1%;
 }
 tr td:first-child{
 	font-weight: 800;
-	color: ;
+	color: #4b6a77;
 }
 tr{
 	font-size: 1.5em;
 	margin: 0 5% 0 5%;
 }
-tbody:last-child{
-	border-style: none;
+tr:last-child{
 }
+tbody tr:hover{
+	background: #368db3 !important;
+	color: #ddd;
+}
+
 
 /* contact-info */
 #contact{
