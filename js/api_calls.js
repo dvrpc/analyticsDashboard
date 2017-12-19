@@ -15,31 +15,31 @@
 
 	}
 */
-
-// remove www.dvrpc.org/ from input to just get 
 const path = localStorage["page"]
-// start and end date jawns
-const startDate = ''
-const endDate = ''
 
-// TODO: UPDATE THE START AND END DATE TO REFLECT WHAT'S ON THE START/END DATE DROPDOWN IN THE PAGE! URGENT!
-        //look into combining some of these - already tried browsers + deviceCategory and the result wasn't very workable 
+// initial queries are for today
+let startDate = new Date().toISOString().slice(0, 10)
+let endDate = startDate
+
+//TODO: look into combining some of these - already tried browsers + deviceCategory and the result wasn't very workable 
 
 // Content Drilldown:
-const contentDrilldown = `http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
+const contentDrilldown = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // Top Downloads:
-const topDownloads = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:eventLabel&metric=ga:totalEvents,ga:uniqueEvents&sortByMetric=true&dimensionFilter=ga:eventAction,Download'
+const topDownloads = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:eventLabel&metric=ga:totalEvents,ga:uniqueEvents&sortByMetric=true&dimensionFilter=ga:eventAction,Download`
 // Browsers: 
-const browsers = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:browser&metric=ga:pageviews&sortByMetric=true'
+const browsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:browser&metric=ga:pageviews&sortByMetric=true`
 // OS: 
-const os = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:operatingSystem&metric=ga:pageviews&sortByMetric=true'
+const os = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:operatingSystem&metric=ga:pageviews&sortByMetric=true`
 // Device Category: 
-const deviceCategory = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-01-01&endDate=2017-12-01&dimension=ga:deviceCategory&metric=ga:pageviews&sortByMetric=true'
+const deviceCategory = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:deviceCategory&metric=ga:pageviews&sortByMetric=true`
 // Hourly: 
-const hourly = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true'
-// We don't have realtime data unfortunately, so we can't get realtime active users. Below is a total count of today's users OR we could use the last hour of users from the Hourly query
+const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true`
+// We don`t have realtime data unfortunately, so we can`t get realtime active users. Below is a total count of today`s users OR we could use the last hour of users from the Hourly query
 // Active Users: 
-const activeUsers = 'http://intranet.dvrpc.org/google/analytics?startDate=2017-12-06&endDate=2017-12-06&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true'
+const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true`
+// referral links (check https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=traffic_sources&jump=ga_referralpath for details on additional dimensions)
+const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source&metric=ga:organicSearches&sortByMetric=true`
 
 function createCORSRequest(method, url) {
     const xhr = new XMLHttpRequest()
@@ -214,10 +214,7 @@ function hourlyRequest(request) {
         const hour = rows[0]
 
         if(hour && hour.dimensions[0] == i){
-            console.log('valid comparison of hour ', hour.dimensions[0])
-            console.log('valid comparison i ', i)
             const barHeight = (hour.metrics[0].values[0]/max) * 100
-            console.log('bar height is ', barHeight)
             bar[i].style.height = `${barHeight}%`
             rows.shift()
         }
@@ -239,7 +236,7 @@ makeRequest(activeUsers, activeRequest)
 
 
 // main function
-$(function () {
+/*$(function () {
 
     // Initial configuration of Start Date and End Date based of of current date
     var d = new Date()
@@ -253,11 +250,11 @@ $(function () {
     var mean = -.000000001
 
     // VISITORS BY HOUR BARS
-/*    $('.section-hourly-users .progress-bar').each(function (i) {
+    $('.section-hourly-users .progress-bar').each(function (i) {
         var x = (i / 24)
         var h = 1 / (( 1/( stdD * Math.sqrt(2 * Math.PI) ) ) * Math.pow(Math.E , -1 * Math.pow(x - mean, 2) / (2 * Math.pow(stdD,2))))
         $(this).height(150 - h * 10)
-    })*/
+    })
 
     // Toggles Top Pages and Top Downloads tabs
     $('.nav-tabs a').on('click', function (e) {
@@ -334,4 +331,4 @@ function update_table() {
             $('#input-path').val($(this).text())
         }
     })
-}
+}*/
