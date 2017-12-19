@@ -53,15 +53,19 @@ body{
 	font-size: 3.5em;
 	padding-bottom: 15px;
 }
-
+.information hr{
+	margin: 0 auto;
+	width: 90%;
+	padding-bottom: 2%;
+}
 #reference-table{
 	margin: 0 auto;
 	width: 90%;
 	color: #474f53;
 }
 th{
-	text-align: center;
-	font-size: 1.7em;
+	text-align: left;
+	font-size: 1.6em;
 }
 tr td:first-child{
 	font-weight: 800;
@@ -69,7 +73,10 @@ tr td:first-child{
 }
 tr{
 	font-size: 1.5em;
-	padding: 0 5% 0 5%;
+	margin: 0 5% 0 5%;
+}
+tbody:last-child{
+	border-style: none;
 }
 
 /* contact-info */
