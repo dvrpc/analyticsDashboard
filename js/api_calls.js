@@ -17,12 +17,15 @@
 */
 const path = localStorage["page"]
 
-// initial queries are for today
-let startDate = new Date().toISOString().slice(0, 10)
-let endDate = startDate
+// initial query, hourly and online today are exclusively for todays date
+const today = new Date().toISOString().slice(0, 10)
+// intialize everything else according to today, but reassign later according to whatever the date inputs become
+let startDate = today
+let endDate = today
 
 //TODO: look into combining some of these - already tried browsers + deviceCategory and the result wasn't very workable 
 
+/***** API URL's *****/
 // Content Drilldown:
 const contentDrilldown = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // Top Downloads:
@@ -33,14 +36,14 @@ const browsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDa
 const os = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:operatingSystem&metric=ga:pageviews&sortByMetric=true`
 // Device Category: 
 const deviceCategory = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:deviceCategory&metric=ga:pageviews&sortByMetric=true`
-// Hourly: 
-const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true`
-// We don`t have realtime data unfortunately, so we can`t get realtime active users. Below is a total count of today`s users OR we could use the last hour of users from the Hourly query
-// Active Users: 
-const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true`
+// Hourly: ONLY needed for today
+const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true`
+// Active Users: ONLY needed for today
+const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true`
 // referral links (check https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=traffic_sources&jump=ga_referralpath for details on additional dimensions)
 const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source&metric=ga:organicSearches&sortByMetric=true`
 
+/**** Function to initiation the API Calls *****/
 function createCORSRequest(method, url) {
     const xhr = new XMLHttpRequest()
 
@@ -58,7 +61,6 @@ function createCORSRequest(method, url) {
 
     return xhr
 }
-
 function makeRequest(url, callback) {
     const request = createCORSRequest('GET', url)
     if (!request) throw new Error('CORS not supported')
@@ -76,17 +78,57 @@ function makeRequest(url, callback) {
     request.send()
 }
 
-/***** API calls happen here *****/
-
+/***** Second layer path jawns *****/
 // result of getContentDrilldown are the url/metrics for the given path + every path that chains off of it
 function drillDownRequest(request) {
-/*    const response = JSON.parse(request.response)
-    console.log('response is ', response)*/
+    const table = document.querySelector('#subpages-content-body')
+
+    const response = JSON.parse(request.response)
+    let rows = response.result.rows
+    
+    // limit to 10 subpaths displayed (MIGHT NOT BE THE MOVE: slice returns a SHALLOW copy, so need to test this out)
+    rows = rows.length < 10 ? rows : rows.slice(0, 9)
+    console.log('rows post ternary ', rows)
+    
+    // table layout:
+        // td1: pathname
+        // td2: views
+        // td3: sessions
+        // td4: time on page
+    // create one of these within tableRows for each row of information from response
+    // create a row. create all the fields. append fields to row, append row to table. yeeesh. 
+    rows.forEach(function(subpath){
+        let row = document.createElement('tr')
+
+        let link = document.createElement('td')
+        link.innerHTML = subpath.dimensions[0]
+        let linkPath = document.createElement('a')
+        //linkPath.href = 'to the website!'
+        link.appendChild(linkPath)
+        row.appendChild(link)
+
+        let views = document.createElement('td')
+        views.classList.add('text-right')
+        views.innerHTML = subpath.metrics[0].values[0]
+        row.appendChild(views)
+
+        let sessions = document.createElement('td')
+        sessions.classList.add('text-right')
+        sessions.innerHTML = subpath.metrics[0].values[1]
+        row.appendChild(sessions)
+
+        let timeSpent = document.createElement('td')
+        timeSpent.classList.add('text-right')
+        timeSpent.innerHTML = subpath.metrics[0].values[2]
+        row.appendChild(timeSpent)
+
+        table.appendChild(row)
+    })
 }
 makeRequest(contentDrilldown, drillDownRequest)
 
 
-// variables and functions for the DEVICES, BROWSERS and OPERATING SYSTEMS sections
+/***** variables and functions for the DEVICES, BROWSERS and OPERATING SYSTEMS sections *****/
 const browserName = document.querySelectorAll('.browser p')
 const browserPercentage = document.querySelectorAll('.browser-percent')
 const browserProgressBar = document.querySelectorAll('.progress-bar-browser')
@@ -202,7 +244,7 @@ makeRequest(browsers, browserRequest)
 makeRequest(os, osRequest)
 
 
-// returns pageviews in the past hour. results dimensions (time of day) and metrics values (# of visitors)
+/***** Page view in the past day, per hour *****/
 function hourlyRequest(request) {
     const response = JSON.parse(request.response)
     const max = response.result.maximums[0].values[0]
@@ -223,7 +265,7 @@ function hourlyRequest(request) {
 makeRequest(hourly, hourlyRequest)
 
 
-// variables and functions for the people online today section
+/***** Number of people online today *****/
 function activeRequest(request) {
     const text = document.querySelector('.active-users')
     const response = JSON.parse(request.response)
@@ -231,8 +273,24 @@ function activeRequest(request) {
 }
 makeRequest(activeUsers, activeRequest) 
 
-// TODO: put every makeRequest function in a main function that executes onpage load, whenever start/end date are updated
-// and whenever a new website section is typed into the search bar
+/***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
+
+// Toggles Top Pages and Top Downloads tabs
+$('.nav-tabs a').on('click', function (e) {
+    e.preventDefault()
+    $($(this).closest('.nav-tabs').find('li').removeClass('active').find('a').map(function () { return $(this).attr('href') }).toArray().join(',')).hide()
+    $(this).parent().addClass('active')
+    $($(this).attr('href')).show()
+})
+
+
+
+
+/* TODO (bringing it all together - last step): 
+    put every makeRequest function in a main function that executes onpage load, whenever start/end date are updated
+    and whenever a new website section is typed into the search bar. Paramaters for the main function will be the
+    makeRequest function, startDate and endDate. the dates refresh the query strings (this is gonna be complicated)
+*/
 
 
 // main function
@@ -256,13 +314,6 @@ makeRequest(activeUsers, activeRequest)
         $(this).height(150 - h * 10)
     })
 
-    // Toggles Top Pages and Top Downloads tabs
-    $('.nav-tabs a').on('click', function (e) {
-        e.preventDefault()
-        $($(this).closest('.nav-tabs').find('li').removeClass('active').find('a').map(function () { return $(this).attr('href') }).toArray().join(',')).hide()
-        $(this).parent().addClass('active')
-        $($(this).attr('href')).show()
-    })
 
     // User Toggles Start Date and End State
     $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
