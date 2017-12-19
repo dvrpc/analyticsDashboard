@@ -26,8 +26,8 @@ let endDate = today
 //TODO: look into combining some of these - already tried browsers + deviceCategory and the result wasn't very workable 
 
 /***** API URL's *****/
-// Content Drilldown:
-const contentDrilldown = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
+// subpath information:
+const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // Top Downloads:
 const topDownloads = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:eventLabel&metric=ga:totalEvents,ga:uniqueEvents&sortByMetric=true&dimensionFilter=ga:eventAction,Download`
 // Browsers: 
@@ -43,7 +43,8 @@ const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${toda
 // referral links (check https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=traffic_sources&jump=ga_referralpath for details on additional dimensions)
 const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source&metric=ga:organicSearches&sortByMetric=true`
 
-/**** Function to initiation the API Calls *****/
+
+/**** Functions to set up the API Calls *****/
 function createCORSRequest(method, url) {
     const xhr = new XMLHttpRequest()
 
@@ -78,32 +79,18 @@ function makeRequest(url, callback) {
     request.send()
 }
 
-/***** Second layer path jawns *****/
-// result of getContentDrilldown are the url/metrics for the given path + every path that chains off of it
-function drillDownRequest(request) {
-    const table = document.querySelector('#subpages-content-body')
 
-    const response = JSON.parse(request.response)
-    let rows = response.result.rows
-    
-    // limit to 10 subpaths displayed (MIGHT NOT BE THE MOVE: slice returns a SHALLOW copy, so need to test this out)
-    rows = rows.length < 10 ? rows : rows.slice(0, 9)
-    console.log('rows post ternary ', rows)
-    
-    // table layout:
-        // td1: pathname
-        // td2: views
-        // td3: sessions
-        // td4: time on page
-    // create one of these within tableRows for each row of information from response
-    // create a row. create all the fields. append fields to row, append row to table. yeeesh. 
+/***** variables and function for the Tab tables - Subpages and Traffic Sources *****/
+const subPagesTable = document.querySelector('#subpages-content-body')
+const trafficTable = document.querySelector('#referral-content-body')
+
+function buildTabTables(rows, tableID){
     rows.forEach(function(subpath){
         let row = document.createElement('tr')
 
         let link = document.createElement('td')
         link.innerHTML = subpath.dimensions[0]
         let linkPath = document.createElement('a')
-        //linkPath.href = 'to the website!'
         link.appendChild(linkPath)
         row.appendChild(link)
 
@@ -122,13 +109,34 @@ function drillDownRequest(request) {
         timeSpent.innerHTML = subpath.metrics[0].values[2]
         row.appendChild(timeSpent)
 
-        table.appendChild(row)
+        tableID.appendChild(row)
     })
 }
-makeRequest(contentDrilldown, drillDownRequest)
+
+function makeSubpageTable(request) {
+    const response = JSON.parse(request.response)
+    let rows = response.result.rows
+    
+    // limit to 10 subpaths displayed (MIGHT NOT BE THE MOVE: slice returns a SHALLOW copy, so need to test this out)
+    rows = rows.length < 10 ? rows : rows.slice(0, 9)
+
+    buildTabTables(rows, subPagesTable)
+}
+function makeTrafficTable(request) {
+    const response = JSON.parse(request.response)
+    let rows = response.result.rows
+    
+    // limit to 10 subpaths displayed (MIGHT NOT BE THE MOVE: slice returns a SHALLOW copy, so need to test this out)
+    rows = rows.length < 10 ? rows : rows.slice(0, 9)
+
+    buildTabTables(rows, trafficTable)
+}
+
+makeRequest(subPaths, makeSubpageTable)
+makeRequest(comingFrom, makeTrafficTable)
 
 
-/***** variables and functions for the DEVICES, BROWSERS and OPERATING SYSTEMS sections *****/
+/***** variables and functions for the devices, browsers and operating systems sections *****/
 const browserName = document.querySelectorAll('.browser p')
 const browserPercentage = document.querySelectorAll('.browser-percent')
 const browserProgressBar = document.querySelectorAll('.progress-bar-browser')
