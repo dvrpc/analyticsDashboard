@@ -205,24 +205,22 @@ makeRequest(os, osRequest)
 // returns pageviews in the past hour. results dimensions (time of day) and metrics values (# of visitors)
 function hourlyRequest(request) {
     const response = JSON.parse(request.response)
+    const max = response.result.maximums[0].values[0]
+    console.log('max visitors in a given hour ', max)
     const rows = response.result.rows
-    console.log('rows is ', rows)
     const bar = document.querySelectorAll('.progress-vertical')
-    console.log('bar is ', bar)
 
-    // hours: result[n].dimensions (string!)
-    // visitors: result[n].metrics[0].values[0] (string!)
-    // DUMMY DATA: &nbsp; used to be what worked the progress bars DOWN from being full 
+    // later optimization: try running the loop backwards in order to use pop instead of shift..
+    for(var i = 0; i < 24; i++){
+        const hour = rows[0]
 
-    // any hours with 0 viewers will NOT return, so must be filled in
-    for(var i = 0; i <24; i++){
-        // == for that no-type-conversion javascript black magic
-        // TODO: figure out how to adjust the height of the bars. style.height is NOT the answer
-        if(rows[i] /*&& rows[i].dimensions[0] == i*/){
-            console.log('rows at i ', rows[i].dimensions[0])
-            console.log('comparison at i ', rows[i].dimensions[0] == i)
-        }else{
-            console.log('in the empty hours at i ', i)
+        if(hour && hour.dimensions[0] == i){
+            console.log('valid comparison of hour ', hour.dimensions[0])
+            console.log('valid comparison i ', i)
+            const barHeight = (hour.metrics[0].values[0]/max) * 100
+            console.log('bar height is ', barHeight)
+            bar[i].style.height = `${barHeight}%`
+            rows.shift()
         }
     }
 }
