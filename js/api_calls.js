@@ -41,7 +41,7 @@ const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&en
 // Active Users: ONLY needed for today
 const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true`
 // referral links (check https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=traffic_sources&jump=ga_referralpath for details on additional dimensions)
-const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source&metric=ga:organicSearches&sortByMetric=true`
+const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source,ga:socialNetwork,ga:referralPath&metric=ga:organicSearches&sortByMetric=true`
 
 
 /**** Functions to set up the API Calls *****/
@@ -122,11 +122,17 @@ function makeSubpageTable(request) {
 
     buildTabTables(rows, subPagesTable)
 }
+
 function makeTrafficTable(request) {
     const response = JSON.parse(request.response)
+    // organicSearch is the only available METRIC for referral, but there are plenty of interesting DIMENSIONS. Including them
+    // might allow me to fnagle a 4 column row and save the modularity. 
+    console.log('response is ', response)
+    // OPTION: 
     let rows = response.result.rows
+    // rows would have to be an array populated with objects made up of a combination of metrics/dimensions 
+        // ex row = [{dimension: lkfj, dimension: lkdfj, dimension: kdlfj, metric: organicSearch}]
     
-    // limit to 10 subpaths displayed (MIGHT NOT BE THE MOVE: slice returns a SHALLOW copy, so need to test this out)
     rows = rows.length < 10 ? rows : rows.slice(0, 9)
 
     buildTabTables(rows, trafficTable)
