@@ -106,7 +106,7 @@ function buildTabTables(rows, tableID){
 
         let timeSpent = document.createElement('td')
         timeSpent.classList.add('text-right')
-        timeSpent.innerHTML = subpath.metrics[0].values[2]
+        timeSpent.innerHTML = Math.round(subpath.metrics[0].values[2])
         row.appendChild(timeSpent)
 
         tableID.appendChild(row)
@@ -175,6 +175,8 @@ function deviceRequest(request) {
     let first = {percent: 0, technology: ''}
     let second = {percent: 0, technology: ''}
     let third = {percent: 0, technology: ''}
+
+    console.log('devirce request rows ', result)
 
     result.rows.forEach(function(row, index) {
         switch(index){

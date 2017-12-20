@@ -7,7 +7,7 @@ const date = new Date().toISOString().slice(0, 10)
 const dimensions = 'ga:pagePath'
 const metrics = 'ga:pageviews,ga:sessions,ga:avgTimeOnPage'
 
-const topPages = `http://intranet.dvrpc.org/google/analytics?startDate=${date}&endDate=${date}&dimension=${dimensions}&metric=${metrics}&sortByMetric=true&pageSize=5`
+const topPages = `http://intranet.dvrpc.org/google/analytics?startDate=${date}&endDate=${date}&dimension=${dimensions}&metric=${metrics}&sortByMetric=true&pageSize=4`
 
 function createCORSRequest(method, url) {
 	const xhr = new XMLHttpRequest()
