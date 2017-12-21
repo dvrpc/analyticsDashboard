@@ -39,7 +39,7 @@ const deviceCategory = `http://intranet.dvrpc.org/google/analytics?startDate=${s
 // Hourly: ONLY needed for today
 const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
 // Active Users: ONLY needed for today
-const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:sessions&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
+const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // referral links (check https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=traffic_sources&jump=ga_referralpath for details on additional dimensions)
 const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source,ga:socialNetwork,ga:referralPath&metric=ga:organicSearches&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 
