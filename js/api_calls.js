@@ -40,8 +40,8 @@ const deviceCategory = `http://intranet.dvrpc.org/google/analytics?startDate=${s
 const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
 // Active Users: ONLY needed for today
 const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
-// referral links (check https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=traffic_sources&jump=ga_referralpath for details on additional dimensions)
-const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source,ga:socialNetwork,ga:referralPath&metric=ga:organicSearches&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
+// referral links 
+const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:fullReferrer&metric=ga:organicSearches,ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 
 
 /**** Functions to set up the API Calls *****/
@@ -86,6 +86,10 @@ const trafficTable = document.querySelector('#referral-content-body')
 
 function buildTabTables(rows, tableID){
     rows.forEach(function(subpath){
+        // traffic metrics first value is organicSearches which isn't needed here
+        const values = subpath.metrics[0].values
+        if(values.length > 3) values.shift()
+
         let row = document.createElement('tr')
 
         let link = document.createElement('td')
@@ -96,17 +100,17 @@ function buildTabTables(rows, tableID){
 
         let views = document.createElement('td')
         views.classList.add('text-right')
-        views.innerHTML = subpath.metrics[0].values[0]
+        views.innerHTML = values[0]
         row.appendChild(views)
 
         let sessions = document.createElement('td')
         sessions.classList.add('text-right')
-        sessions.innerHTML = subpath.metrics[0].values[1]
+        sessions.innerHTML = values[1]
         row.appendChild(sessions)
 
         let timeSpent = document.createElement('td')
         timeSpent.classList.add('text-right')
-        timeSpent.innerHTML = Math.round(subpath.metrics[0].values[2])
+        timeSpent.innerHTML = Math.round(values[2])
         row.appendChild(timeSpent)
 
         tableID.appendChild(row)
@@ -127,13 +131,18 @@ function makeTrafficTable(request) {
     const response = JSON.parse(request.response)
     // organicSearch is the only available METRIC for referral, but there are plenty of interesting DIMENSIONS. Including them
     // might allow me to fnagle a 4 column row and save the modularity. 
-    console.log('modified traffic query result ', response.result)
+
+    // total number of organicSearches can be accessed via results.totals[0].values[0].
+    const organicSearches = response.result.totals[0].values[0]
+    const organicHeader = document.querySelector('#organic-searches')
+    organicHeader.textContent += organicSearches
+
+    console.log('traffic query result ROWS ', response.result.rows)
+    console.log('traffic query full response ', response)
 
     let rows = response.result.rows
-    // rows would have to be an array populated with objects made up of a combination of metrics/dimensions 
-        // ex row = [{dimension: lkfj, dimension: lkdfj, dimension: kdlfj, metric: organicSearch}]
     
-    rows = rows.length < 10 ? rows : rows.slice(0, 9)
+    rows = rows.length < 10 ? rows : rows.slice(0, 10)
 
     buildTabTables(rows, trafficTable)
 }
@@ -290,7 +299,8 @@ makeRequest(activeUsers, activeRequest)
 
 /***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
 
-// Toggles Top Pages and Top Downloads tabs
+// Toggles Top Pages and Top Downloads tabs (Make this a function once I include tabs for hourly bar/graph. Or just add that to the current tab jawn)
+// This function works but it requires the inline style=display:none for the hidden tabs so at a future date rewrite it in a way that doesn't require that
 $('.nav-tabs a').on('click', function (e) {
     e.preventDefault()
     $($(this).closest('.nav-tabs').find('li').removeClass('active').find('a').map(function () { return $(this).attr('href') }).toArray().join(',')).hide()
@@ -300,13 +310,13 @@ $('.nav-tabs a').on('click', function (e) {
 
 
 
-
 /* TODO (bringing it all together - last step): 
     put every makeRequest function in a main function that executes onpage load, whenever start/end date are updated
     and whenever a new website section is typed into the search bar. Paramaters for the main function will be the
     makeRequest function, startDate and endDate. the dates refresh the query strings (this is gonna be complicated)
     ex:
     mainFunc(startDate, endDate, urlArray){
+        urlArray.forEach url => 
         // all the makeRequest functions
     }
 */

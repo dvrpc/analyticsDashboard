@@ -166,30 +166,35 @@
                                                         <li class="active"><a href="#table-subpages">Top Subpages</a></li>
                                                         <li><a href="#table-referrals">Traffic Sources</a></li>
                                                         </ul>
-                                                        <table id="table-subpages" class="table table-striped">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Page</th>
-                                                                    <th class="text-right">Views</th>
-                                                                    <th class="text-right">Sessions</th>
-                                                                    <th class="text-right">Time on Page</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="subpages-content-body">
-                                                            </tbody>
-                                                        </table>
-                                                        <table id="table-referrals" class="table table-striped" style="display: none;">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Page</th>
-                                                                    <th class="text-right">Views</th>
-                                                                    <th class="text-right">Sessions</th>
-                                                                    <th class="text-right">Time on Page</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="referral-content-body">
-                                                            </tbody>
-                                                        </table>
+                                                        <div id="table-subpages">
+                                                            <table class="table table-striped">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Page</th>
+                                                                        <th class="text-right">Views</th>
+                                                                        <th class="text-right">Sessions</th>
+                                                                        <th class="text-right">Time on Page</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="subpages-content-body">
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div id="table-referrals" style="display:none">
+                                                            <table class="table table-striped">
+                                                                <h3 id="organic-searches"> Search engine queries for this page: </h3>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Traffic Coming From</th>
+                                                                        <th class="text-right">Views</th>
+                                                                        <th class="text-right">Sessions</th>
+                                                                        <th class="text-right">Avg Time on Page</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="referral-content-body">
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                     <div class="col-sm-4">
                                                         <h3>Devices</h3>
