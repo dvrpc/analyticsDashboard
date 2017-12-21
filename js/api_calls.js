@@ -15,6 +15,7 @@
 
 	}
 */
+console.log('local storage in this moment ', localStorage)
 const path = localStorage["page"]
 
 // set the main heading
@@ -22,29 +23,18 @@ const mainHeader = document.querySelector('#results-path')
 mainHeader.textContent += path
 
 // initial query, hourly and online today are exclusively for todays date
+// TODO: have localStorage keys for start and end date and update them on submit. startDate/endDate will be localStorage['startDate'] || today
 const today = new Date().toISOString().slice(0, 10)
-// intialize everything else according to today, but reassign later according to whatever the date inputs become
-let startDate = today
-let endDate = today
-
-//TODO: look into combining some of these - already tried browsers + deviceCategory and the result wasn't very workable 
+let startDate = localStorage["startDate"] || today
+let endDate = localStorage["endDate"] || today
 
 /***** API URL's *****/
-// subpath information:
 const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
-// Top Downloads:
-const topDownloads = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:eventLabel&metric=ga:totalEvents,ga:uniqueEvents&sortByMetric=true&dimensionFilter=ga:eventAction,Download`
-// Browsers: 
 const browsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:browser&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
-// OS: 
 const os = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:operatingSystem&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
-// Device Category: 
 const deviceCategory = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:deviceCategory&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
-// Hourly: ONLY needed for today
 const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
-// Active Users: ONLY needed for today
 const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
-// referral links 
 const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:fullReferrer&metric=ga:organicSearches,ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 
 
@@ -312,6 +302,36 @@ $('.nav-tabs a').on('click', function (e) {
     $($(this).attr('href')).show()
 })
 
+// update query whenever someone toggles startDate, endDate and/or website section
+const newSearch = document.getElementById('main-form')
+function updateData(){
+    const start = document.getElementById('input-start')
+    const end = document.getElementById('input-end')
+    let path = document.getElementById('input-path')
+    path = path.value.slice(14)
+    
+    console.log('path value post slice ', path.value)
+    console.log('start value ', start.value)
+    console.log('end value ', end.value)
+
+    start.value ? localStorage["startDate"] = start.value : null
+    end.value ? localStorage["endDate"] = end.value : null
+    path ? localStorage["page"] = path.value : null
+}
+newSearch.onsubmit = updateData()
+// the conditionals here add an error class to the date picker if the dates are invalid. USE it.
+/*    $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
+        if ($(this).val().length === 0 || isNaN(new Date($(this).val())) || new Date() - new Date($(this).val()) < 0) {
+            $(this).closest('.form-group').addClass('has-error')
+        }
+        else if (new Date($('#input-end').val()) - new Date($('#input-start').val()) < 1) {
+            $('#input-start, #input-end').closest('.form-group').addClass('has-error')
+        }
+        else {
+            $('#input-start, #input-end').closest('.form-group').removeClass('has-error')
+            time_range()
+        }
+    })*/
 
 
 /* TODO (bringing it all together - last step): 
@@ -349,18 +369,6 @@ $('.nav-tabs a').on('click', function (e) {
 
 
     // User Toggles Start Date and End State
-    $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
-        if ($(this).val().length === 0 || isNaN(new Date($(this).val())) || new Date() - new Date($(this).val()) < 0) {
-            $(this).closest('.form-group').addClass('has-error')
-        }
-        else if (new Date($('#input-end').val()) - new Date($('#input-start').val()) < 1) {
-            $('#input-start, #input-end').closest('.form-group').addClass('has-error')
-        }
-        else {
-            $('#input-start, #input-end').closest('.form-group').removeClass('has-error')
-            time_range()
-        }
-    })
     time_range()
 
     // find the inputed Website Section and display the metrics for that particular page
