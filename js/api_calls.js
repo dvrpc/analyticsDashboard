@@ -17,6 +17,10 @@
 */
 const path = localStorage["page"]
 
+// set the main heading
+const mainHeader = document.querySelector('#results-path')
+mainHeader.textContent += path
+
 // initial query, hourly and online today are exclusively for todays date
 const today = new Date().toISOString().slice(0, 10)
 // intialize everything else according to today, but reassign later according to whatever the date inputs become
@@ -110,7 +114,7 @@ function buildTabTables(rows, tableID){
 
         let timeSpent = document.createElement('td')
         timeSpent.classList.add('text-right')
-        timeSpent.innerHTML = Math.round(values[2])
+        timeSpent.innerHTML = Math.round(values[2])+'s'
         row.appendChild(timeSpent)
 
         tableID.appendChild(row)

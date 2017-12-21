@@ -1,8 +1,10 @@
-#return-home:hover, #return-home:visited, #-return-home:link, #return-home:active {
-    text-decoration: none !important;
-    border-bottom: none !important;
+#main-heading{
+    display: flex;
+    justify-content: space-between;
 }
-
+#results-path{
+    color: black;
+}
 .section-active-users {
     text-align: center;
     font-size: 2em;
@@ -144,6 +146,9 @@ table a:hover {
 }
 table thead {
     display: none;
+}
+table tr{
+    max-width: 40%;
 }
 table tr>*:first-child{
     display: block;
