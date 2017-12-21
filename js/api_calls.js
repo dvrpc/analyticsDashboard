@@ -117,8 +117,8 @@ function makeSubpageTable(request) {
     const response = JSON.parse(request.response)
     let rows = response.result.rows
     
-    // limit to 10 subpaths displayed (MIGHT NOT BE THE MOVE: slice returns a SHALLOW copy, so need to test this out)
-    rows = rows.length < 10 ? rows : rows.slice(0, 9)
+    // limit the table size to 10 subPaths (need to handle edge case of NO subpath)
+    rows = rows.length < 10 ? rows : rows.slice(0, 10)
 
     buildTabTables(rows, subPagesTable)
 }
@@ -127,8 +127,8 @@ function makeTrafficTable(request) {
     const response = JSON.parse(request.response)
     // organicSearch is the only available METRIC for referral, but there are plenty of interesting DIMENSIONS. Including them
     // might allow me to fnagle a 4 column row and save the modularity. 
-    console.log('response is ', response)
-    // OPTION: 
+    console.log('modified traffic query result ', response.result)
+
     let rows = response.result.rows
     // rows would have to be an array populated with objects made up of a combination of metrics/dimensions 
         // ex row = [{dimension: lkfj, dimension: lkdfj, dimension: kdlfj, metric: organicSearch}]
@@ -175,8 +175,6 @@ function deviceRequest(request) {
     let first = {percent: 0, technology: ''}
     let second = {percent: 0, technology: ''}
     let third = {percent: 0, technology: ''}
-
-    console.log('devirce request rows ', result)
 
     result.rows.forEach(function(row, index) {
         switch(index){
@@ -288,6 +286,7 @@ function activeRequest(request) {
     text.textContent = response.result.totals[0].values[0]
 }
 makeRequest(activeUsers, activeRequest) 
+
 
 /***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
 
