@@ -86,11 +86,11 @@ function buildTabTables(rows, tableID){
 
         let row = document.createElement('tr')
 
-        let link = document.createElement('td')
-        link.innerHTML = subpath.dimensions[0]
-        let linkPath = document.createElement('a')
-        link.appendChild(linkPath)
-        row.appendChild(link)
+        let source = document.createElement('td')
+        source.innerHTML = subpath.dimensions[0]
+        let sourcePath = document.createElement('a')
+        source.appendChild(sourcePath)
+        row.appendChild(source)
 
         let views = document.createElement('td')
         views.classList.add('text-right')
@@ -113,9 +113,8 @@ function buildTabTables(rows, tableID){
 
 function makeSubpageTable(request) {
     const response = JSON.parse(request.response)
+
     let rows = response.result.rows
-    
-    // limit the table size to 10 subPaths (need to handle edge case of NO subpath)
     rows = rows.length < 10 ? rows : rows.slice(0, 10)
 
     buildTabTables(rows, subPagesTable)
@@ -123,19 +122,12 @@ function makeSubpageTable(request) {
 
 function makeTrafficTable(request) {
     const response = JSON.parse(request.response)
-    // organicSearch is the only available METRIC for referral, but there are plenty of interesting DIMENSIONS. Including them
-    // might allow me to fnagle a 4 column row and save the modularity. 
 
-    // total number of organicSearches can be accessed via results.totals[0].values[0].
     const organicSearches = response.result.totals[0].values[0]
     const organicHeader = document.querySelector('#organic-searches')
     organicHeader.textContent += organicSearches
 
-    console.log('traffic query result ROWS ', response.result.rows)
-    console.log('traffic query full response ', response)
-
     let rows = response.result.rows
-    
     rows = rows.length < 10 ? rows : rows.slice(0, 10)
 
     buildTabTables(rows, trafficTable)
@@ -303,22 +295,24 @@ $('.nav-tabs a').on('click', function (e) {
 })
 
 // update query whenever someone toggles startDate, endDate and/or website section
+// as it stands, everything in this function only represents the values at their DEFAULT. they don't reflect updates, for some reason.
+// look into this. 
 const newSearch = document.getElementById('main-form')
 function updateData(){
     const start = document.getElementById('input-start')
     const end = document.getElementById('input-end')
     let path = document.getElementById('input-path')
-    path = path.value.slice(14)
-    
-    console.log('path value post slice ', path.value)
-    console.log('start value ', start.value)
-    console.log('end value ', end.value)
+    console.log('path value straight up ', path.value)
+
+    console.log('start value is ', start.value)
+    console.log('end is ', end)
 
     start.value ? localStorage["startDate"] = start.value : null
     end.value ? localStorage["endDate"] = end.value : null
-    path ? localStorage["page"] = path.value : null
+    path ? localStorage["page"] = path : null
 }
 newSearch.onsubmit = updateData()
+
 // the conditionals here add an error class to the date picker if the dates are invalid. USE it.
 /*    $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
         if ($(this).val().length === 0 || isNaN(new Date($(this).val())) || new Date() - new Date($(this).val()) < 0) {
