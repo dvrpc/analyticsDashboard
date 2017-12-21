@@ -54,7 +54,7 @@ body{
 .top-page-box{
 	background: white;
 	margin: 1% 0 2.5% 0;
-	padding: 1% 2% 1% 2%;
+	padding: 1% 4% 1% 4%;
 	-webkit-box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.20);
 	-moz-box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.20);
 	box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.20);
@@ -64,7 +64,7 @@ body{
 	font-size: 0.8em;
 } 
 .top-page-box h3{
-	font-size: 1.4vw;
+	font-size: 1vw;
 }
 .top-page-box:hover{
 	background: #e7df8b;
@@ -88,7 +88,7 @@ body{
 #reference-table{
 	margin: 0 auto;
 	width: 90%;
-	color: #474f53;
+	color: rgba(0,0,0,0.8);
 }
 tr:nth-child(even){
 	background-color: #ddd;
@@ -96,7 +96,7 @@ tr:nth-child(even){
 th{
 	text-align: left;
 	font-size: 1.6em;
-	background: #4b6a77;
+	background: #0078ae;
 	color: #f9fafb;
 }
 td{
@@ -104,7 +104,7 @@ td{
 }
 tr td:first-child{
 	font-weight: 900;
-	color: #4b6a77;
+	color: #474f53;
 }
 tr{
 	font-size: 1.5em;
