@@ -43,11 +43,8 @@ body{
 }
 .top-pages{
 	display: flex;
-	flex-direction: row;
 	justify-content: space-around;
 	align-items: center;
-	flex-wrap: wrap;
-	flex-basis: max-content;
 	text-align: center;
 	font-size: 1.6em;
 }
@@ -64,6 +61,7 @@ body{
 	font-size: 0.8em;
 } 
 .top-page-box h3{
+	max-width: 100%;
 	font-size: 1vw;
 }
 .top-page-box:hover{

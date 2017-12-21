@@ -41,10 +41,10 @@ function getTopFive(url) {
 		const response = JSON.parse(request.response)
 
 		topFive.forEach((card, index) => {
-			card.children[0].innerHTML += response.result.rows[index].dimensions
-			card.children[3].innerHTML = response.result.rows[index].metrics[0].values[0]
-			card.children[5].innerHTML = response.result.rows[index].metrics[0].values[1]
-			card.children[7].innerHTML = Math.floor(response.result.rows[index].metrics[0].values[2]) + ' seconds'
+			card.children[0].textContent += response.result.rows[index].dimensions
+			card.children[3].textContent = response.result.rows[index].metrics[0].values[0]
+			card.children[5].textContent = response.result.rows[index].metrics[0].values[1]
+			card.children[7].textContent = Math.floor(response.result.rows[index].metrics[0].values[2]) + ' seconds'
 		})
 	}
 
