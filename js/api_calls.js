@@ -31,17 +31,17 @@ const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDa
 // Top Downloads:
 const topDownloads = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:eventLabel&metric=ga:totalEvents,ga:uniqueEvents&sortByMetric=true&dimensionFilter=ga:eventAction,Download`
 // Browsers: 
-const browsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:browser&metric=ga:pageviews&sortByMetric=true`
+const browsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:browser&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // OS: 
-const os = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:operatingSystem&metric=ga:pageviews&sortByMetric=true`
+const os = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:operatingSystem&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // Device Category: 
-const deviceCategory = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:deviceCategory&metric=ga:pageviews&sortByMetric=true`
+const deviceCategory = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:deviceCategory&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // Hourly: ONLY needed for today
-const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true`
+const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
 // Active Users: ONLY needed for today
-const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:sessions&sortByMetric=true`
+const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:sessions&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 // referral links (check https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=traffic_sources&jump=ga_referralpath for details on additional dimensions)
-const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source,ga:socialNetwork,ga:referralPath&metric=ga:organicSearches&sortByMetric=true`
+const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:source,ga:socialNetwork,ga:referralPath&metric=ga:organicSearches&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 
 
 /**** Functions to set up the API Calls *****/
@@ -305,6 +305,10 @@ $('.nav-tabs a').on('click', function (e) {
     put every makeRequest function in a main function that executes onpage load, whenever start/end date are updated
     and whenever a new website section is typed into the search bar. Paramaters for the main function will be the
     makeRequest function, startDate and endDate. the dates refresh the query strings (this is gonna be complicated)
+    ex:
+    mainFunc(startDate, endDate, urlArray){
+        // all the makeRequest functions
+    }
 */
 
 
