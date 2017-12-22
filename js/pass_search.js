@@ -6,4 +6,4 @@ searchQuery.onkeyup = function() {
 	pageURL = searchQuery.value
 }
 
-form.onsubmit = function(){localStorage["page"] = pageURL.slice(14)}
+form.onsubmit = function(){localStorage.setItem('page', pageURL.slice(14))}

@@ -16,7 +16,7 @@
 	}
 */
 console.log('local storage in this moment ', localStorage)
-const path = localStorage["page"]
+const path = localStorage.getItem('page')
 
 // set the main heading
 const mainHeader = document.querySelector('#results-path')
@@ -25,8 +25,8 @@ mainHeader.textContent += path
 // initial query, hourly and online today are exclusively for todays date
 // TODO: have localStorage keys for start and end date and update them on submit. startDate/endDate will be localStorage['startDate'] || today
 const today = new Date().toISOString().slice(0, 10)
-let startDate = localStorage["startDate"] || today
-let endDate = localStorage["endDate"] || today
+let startDate = localStorage.getItem('startDate') || today
+let endDate = localStorage.getItem('endDate') || today
 
 /***** API URL's *****/
 const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
@@ -298,20 +298,26 @@ $('.nav-tabs a').on('click', function (e) {
 // as it stands, everything in this function only represents the values at their DEFAULT. they don't reflect updates, for some reason.
 // look into this. 
 const newSearch = document.getElementById('main-form')
-function updateData(){
-    const start = document.getElementById('input-start')
-    const end = document.getElementById('input-end')
-    let path = document.getElementById('input-path')
-    console.log('path value straight up ', path.value)
+const newTimes = document.getElementById('update-times')
 
-    console.log('start value is ', start.value)
-    console.log('end is ', end)
+function updateData(flag){
+    let start = document.getElementById('input-start')
+    start = start.value
+    let end = document.getElementById('input-end')
+    end = end.value
+    let newPath = document.getElementById('input-path')
+    newPath = newPath.value.slice(14)
 
-    start.value ? localStorage["startDate"] = start.value : null
-    end.value ? localStorage["endDate"] = end.value : null
-    path ? localStorage["page"] = path : null
+    console.log('newPath value straight up ', newPath)
+    console.log('start value is ', start)
+    console.log('end value is ', end)
+
+    if(flag){newPath ? localStorage.setItem('page', newPath) : null}
+    start.value ? localStorage.setItem('startDate', start) : null
+    end.value ? localStorage.setItem('endDate', end) : null
 }
-newSearch.onsubmit = updateData()
+newTimes.onsubmit = function(){updateData()}
+newSearch.onsubmit = function(){updateData(true)}
 
 // the conditionals here add an error class to the date picker if the dates are invalid. USE it.
 /*    $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
