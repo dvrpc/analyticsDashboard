@@ -98,7 +98,7 @@ function buildTabTables(rows, tableID){
 
 function makeSubpageTable(request) {
     const response = JSON.parse(request.response)
-    
+
     let rows = response.result.rows
     buildTabTables(rows, subPagesTable)
 }
@@ -263,6 +263,40 @@ function activeRequest(request) {
 makeRequest(activeUsers, activeRequest) 
 
 
+/***** Generate and update the graph *****/
+console.log('google is ', google)
+const chartDiv = document.getElementById('chart-div')
+google.charts.load('current', {'packages':['corechart']})
+google.charts.setOnLoadCallback(drawChart)
+
+// TODO: accept an array of pageViews then scooby the doobies
+function drawChart(){
+    const data = google.visualization.arrayToDataTable([
+        ['Time', 'Page Views'],
+        [2001, 75],
+        [2002, 32],
+        [2003, 103],
+        [2004, 21],
+        [2005, 52],
+        [2006, 32],
+        [2007, 12]
+    ])
+
+    const options = {
+        title: `Page Views From ${startDate} - ${endDate}`,
+        curveType: 'function',
+        legend: {position: 'bottom'}
+    }
+
+    let chart = new google.visualization.LineChart(chartDiv)
+    chart.draw(data, options)
+}
+
+/*google.charts.load("visualization", "1", {'packages':["corechart"]})
+*/
+
+
+
 /***** Update timeframe and/or section *****/
 const newSearch = document.getElementById('main-form')
 
@@ -273,10 +307,6 @@ function updateData(){
     end = new Date(end.value).toISOString().slice(0, 10)
     let newPath = document.getElementById('input-path')
     newPath = newPath.value.slice(14)
-
-    console.log('newPath value straight up ', newPath)
-    console.log('start value is ', start)
-    console.log('end value is ', end)
 
     path != newPath ? localStorage.setItem('page', newPath) : null
     start ? localStorage.setItem('startDate', start) : null
