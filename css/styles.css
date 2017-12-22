@@ -16,6 +16,16 @@
     font-size: 4em;
     font-weight: bold;
 }
+.range-metrics-header{
+    text-align: center;
+    font-size: 2em;
+    margin: 0;
+    padding-top: 2.5%;
+}
+#metrics-start, #metrics-end{
+    color: black;
+}
+
 .section-hourly-users table {
     table-layout: fixed;
 }

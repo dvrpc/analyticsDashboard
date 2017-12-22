@@ -1,43 +1,26 @@
-/* API: http://intranet.dvrpc.org/google/analytics
-   Options:
-	{
-		startDate: <YYYY-MM-dd>
-		endDate: <YYYY-MM-dd>
-		dimension: <comma-separated> // rows
-		metric: <comma-separated>    // columns
-		dimensionFilter: <dimension>,<RegExp>
-		metricFilter: <metric>,<RegExp>
-		sortByMetric: <bool>         // Only first metric sorted
-		sortByDimension: <bool>      // Only first dimension sorted
-		sortAscending: <bool>        // Default: false
-        pageSize: <number> // limits number of pages returned (ex. 5) RETURNS nextPageToken
-        pageToken: use nextPageToken from pageSize to get results
-
-	}
-*/
-console.log('local storage in this moment ', localStorage)
+// query string variables 
 const path = localStorage.getItem('page')
-
-// set the main heading
-const mainHeader = document.querySelector('#results-path')
-mainHeader.textContent += path
-
-// initial query, hourly and online today are exclusively for todays date
-// TODO: have localStorage keys for start and end date and update them on submit. startDate/endDate will be localStorage['startDate'] || today
 const today = new Date().toISOString().slice(0, 10)
 let startDate = localStorage.getItem('startDate') || today
 let endDate = localStorage.getItem('endDate') || today
-console.log('start date is ', startDate)
-console.log('end date is ', endDate)
+
+// set the main heading & the range subheading
+const mainHeader = document.querySelector('#results-path')
+const rangeHeaderStart = document.getElementById('metrics-start')
+const rangeHeaderEnd = document.getElementById('metrics-end')
+mainHeader.textContent += path
+rangeHeaderStart.textContent = startDate
+rangeHeaderEnd.textContent = endDate
+
 
 /***** API URL's *****/
-const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 const browsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:browser&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 const os = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:operatingSystem&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 const deviceCategory = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:deviceCategory&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
 const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
-const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:fullReferrer&metric=ga:organicSearches,ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
+const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&pageSize=10&sortByMetric=true`
+const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:fullReferrer&metric=ga:organicSearches,ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&pageSize=10&sortByMetric=true`
 
 
 /**** Functions to set up the API Calls *****/
@@ -115,23 +98,18 @@ function buildTabTables(rows, tableID){
 
 function makeSubpageTable(request) {
     const response = JSON.parse(request.response)
-
+    
     let rows = response.result.rows
-    rows = rows.length < 10 ? rows : rows.slice(0, 10)
-
     buildTabTables(rows, subPagesTable)
 }
 
 function makeTrafficTable(request) {
     const response = JSON.parse(request.response)
-
     const organicSearches = response.result.totals[0].values[0]
     const organicHeader = document.querySelector('#organic-searches')
     organicHeader.textContent += organicSearches
 
     let rows = response.result.rows
-    rows = rows.length < 10 ? rows : rows.slice(0, 10)
-
     buildTabTables(rows, trafficTable)
 }
 
@@ -285,20 +263,7 @@ function activeRequest(request) {
 makeRequest(activeUsers, activeRequest) 
 
 
-/***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
-
-// Toggles Top Pages and Top Downloads tabs (Make this a function once I include tabs for hourly bar/graph. Or just add that to the current tab jawn)
-// This function works but it requires the inline style=display:none for the hidden tabs so at a future date rewrite it in a way that doesn't require that
-$('.nav-tabs a').on('click', function (e) {
-    e.preventDefault()
-    $($(this).closest('.nav-tabs').find('li').removeClass('active').find('a').map(function () { return $(this).attr('href') }).toArray().join(',')).hide()
-    $(this).parent().addClass('active')
-    $($(this).attr('href')).show()
-})
-
-// update query whenever someone toggles startDate, endDate and/or website section
-// as it stands, everything in this function only represents the values at their DEFAULT. they don't reflect updates, for some reason.
-// look into this. 
+/***** Update timeframe and/or section *****/
 const newSearch = document.getElementById('main-form')
 
 function updateData(){
@@ -318,7 +283,6 @@ function updateData(){
     end ? localStorage.setItem('endDate', end) : null
 }
 newSearch.onsubmit = function(){updateData()}
-
 // the conditionals here add an error class to the date picker if the dates are invalid. USE it.
 /*    $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
         if ($(this).val().length === 0 || isNaN(new Date($(this).val())) || new Date() - new Date($(this).val()) < 0) {
@@ -334,6 +298,17 @@ newSearch.onsubmit = function(){updateData()}
     })*/
 
 
+/***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
+
+// TODO: rewrite this in vanilla so that I can remove the jQuery dependency 
+$('.nav-tabs a').on('click', function (e) {
+    e.preventDefault()
+    $($(this).closest('.nav-tabs').find('li').removeClass('active').find('a').map(function () { return $(this).attr('href') }).toArray().join(',')).hide()
+    $(this).parent().addClass('active')
+    $($(this).attr('href')).show()
+})
+
+
 /* TODO (bringing it all together - last step): 
     put every makeRequest function in a main function that executes onpage load, whenever start/end date are updated
     and whenever a new website section is typed into the search bar. Paramaters for the main function will be the
@@ -345,53 +320,8 @@ newSearch.onsubmit = function(){updateData()}
     }
 */
 
-
-// main function
-/*$(function () {
-
-    // Initial configuration of Start Date and End Date based of of current date
-    var d = new Date()
-    $('#input-end').val(d.toISOString().slice(0, 10))
-    d.setMonth(new Date().getMonth() - 1)
-    $('#input-start').val(d.toISOString().slice(0, 10))
-
-    getParameterByName('section') && $('#input-path').val(getParameterByName('section'))
-
-    var stdD = -.00000000001
-    var mean = -.000000001
-
-    // VISITORS BY HOUR BARS
-    $('.section-hourly-users .progress-bar').each(function (i) {
-        var x = (i / 24)
-        var h = 1 / (( 1/( stdD * Math.sqrt(2 * Math.PI) ) ) * Math.pow(Math.E , -1 * Math.pow(x - mean, 2) / (2 * Math.pow(stdD,2))))
-        $(this).height(150 - h * 10)
-    })
-
-
-    // User Toggles Start Date and End State
-    time_range()
-
-    // find the inputed Website Section and display the metrics for that particular page
-    $('#input-path').on('change', function () {
-        history.replaceState({section: $(this).val()}, '', '?section=' + $(this).val())
-        update_table()
-    })
-
-    $('form').on('submit', function (e) {
-        e.preventDefault()
-        console.log($(this).serialize())
-    })
-})
-
-
-// * Find the webpage the user searched for in Website Section 
-function getParameterByName(name) {
-    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
-    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-}
-
 // Calculate and display how many users visted over the 30 days inbetween Start and End Date.
-function time_range() {
+/*function time_range() {
     var days = (new Date($('#input-end').val()) - new Date($('#input-start').val())) / 8.64e+7
     $('.time-range').text('over the ' + (new Date().toISOString().slice(0,10) == $('#input-end').val() ? 'last ' : 'selected ') + (days === 365 ? 'year' : days < 90 ? days % 7 === 0 ? days === 7 ? 'week' : days / 7 + ' weeks' : days + ' days' : ~~(days / 30) + ' months'))
 
@@ -410,17 +340,4 @@ function time_range() {
     }
 
     $('.total-users').text(text)
-}
-
-// Update data tables to display data relevant to the page entered in Website Section
-function update_table() {
-    $('table a').each(function () {
-        var i = $('#input-path').val().length
-        $(this).html('<span class="subtle">' + $(this).text().slice(0, i) + '</span>' + $(this).text().substr(i))
-    }).on('click', function (e) {
-        e.preventDefault()
-        if ($(this).text().trim().endsWith('/')) {
-            $('#input-path').val($(this).text())
-        }
-    })
 }*/
