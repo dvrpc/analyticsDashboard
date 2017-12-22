@@ -285,7 +285,10 @@ function drawChart(){
     const options = {
         title: `Page Views From ${startDate} - ${endDate}`,
         curveType: 'function',
-        legend: {position: 'bottom'}
+        legend: {position: 'bottom'},
+        // super arbitrary rn: FIND A WAY to replace so that height is the remainder of the parent div 
+        height: 550,
+        colors: ['#e6693e']
     }
 
     let chart = new google.visualization.LineChart(chartDiv)
