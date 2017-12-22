@@ -27,6 +27,8 @@ mainHeader.textContent += path
 const today = new Date().toISOString().slice(0, 10)
 let startDate = localStorage.getItem('startDate') || today
 let endDate = localStorage.getItem('endDate') || today
+console.log('start date is ', startDate)
+console.log('end date is ', endDate)
 
 /***** API URL's *****/
 const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
@@ -298,13 +300,12 @@ $('.nav-tabs a').on('click', function (e) {
 // as it stands, everything in this function only represents the values at their DEFAULT. they don't reflect updates, for some reason.
 // look into this. 
 const newSearch = document.getElementById('main-form')
-const newTimes = document.getElementById('update-times')
 
-function updateData(flag){
+function updateData(){
     let start = document.getElementById('input-start')
-    start = start.value
+    start = new Date(start.value).toISOString().slice(0, 10)
     let end = document.getElementById('input-end')
-    end = end.value
+    end = new Date(end.value).toISOString().slice(0, 10)
     let newPath = document.getElementById('input-path')
     newPath = newPath.value.slice(14)
 
@@ -312,12 +313,11 @@ function updateData(flag){
     console.log('start value is ', start)
     console.log('end value is ', end)
 
-    if(flag){newPath ? localStorage.setItem('page', newPath) : null}
-    start.value ? localStorage.setItem('startDate', start) : null
-    end.value ? localStorage.setItem('endDate', end) : null
+    path != newPath ? localStorage.setItem('page', newPath) : null
+    start ? localStorage.setItem('startDate', start) : null
+    end ? localStorage.setItem('endDate', end) : null
 }
-newTimes.onsubmit = function(){updateData()}
-newSearch.onsubmit = function(){updateData(true)}
+newSearch.onsubmit = function(){updateData()}
 
 // the conditionals here add an error class to the date picker if the dates are invalid. USE it.
 /*    $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
