@@ -264,12 +264,14 @@ makeRequest(activeUsers, activeRequest)
 
 
 /***** Generate and update the graph *****/
-console.log('google is ', google)
 const chartDiv = document.getElementById('chart-div')
 google.charts.load('current', {'packages':['corechart']})
 google.charts.setOnLoadCallback(drawChart)
+// make it responsive
+window.onresize = function(){drawChart()}
 
-// TODO: accept an array of pageViews then scooby the doobies
+
+// TODO: accept an array of pageViews to populate the jawn
 function drawChart(){
     const data = google.visualization.arrayToDataTable([
         ['Time', 'Page Views'],
@@ -287,17 +289,13 @@ function drawChart(){
         curveType: 'function',
         legend: {position: 'bottom'},
         // super arbitrary rn: FIND A WAY to replace so that height is the remainder of the parent div 
-        height: 550,
+        height: 500,
         colors: ['#e6693e']
     }
 
     let chart = new google.visualization.LineChart(chartDiv)
     chart.draw(data, options)
 }
-
-/*google.charts.load("visualization", "1", {'packages':["corechart"]})
-*/
-
 
 
 /***** Update timeframe and/or section *****/
