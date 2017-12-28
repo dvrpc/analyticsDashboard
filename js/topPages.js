@@ -27,7 +27,7 @@ function createCORSRequest(method, url) {
 	return xhr
 }
 
-function getTopFive(url) {
+function getTopPages(url) {
 	const request = createCORSRequest('GET', url)
 	if (!request) throw new Error('CORS not supported')
 
@@ -55,4 +55,4 @@ function getTopFive(url) {
 	request.send()
 }
 
-getTopFive(topPages)
+getTopPages(topPages)

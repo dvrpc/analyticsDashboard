@@ -21,6 +21,8 @@ const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&en
 const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${today}&endDate=${today}&dimension=ga:hostname&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&pageSize=10&sortByMetric=true`
 const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:fullReferrer&metric=ga:organicSearches,ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&pageSize=10&sortByMetric=true`
+const dailyGraph = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
+
 
 
 /**** Functions to set up the API Calls *****/
@@ -263,40 +265,53 @@ function activeRequest(request) {
 makeRequest(activeUsers, activeRequest) 
 
 
-/***** Generate and update the graph *****/
+/***** Pageviews over Time Graph *****/
 const chartDiv = document.getElementById('chart-div')
 google.charts.load('current', {'packages':['corechart']})
 google.charts.setOnLoadCallback(drawChart)
 // make it responsive
 window.onresize = function(){drawChart()}
 
-
 // TODO: accept an array of pageViews to populate the jawn
-function drawChart(){
-    const data = google.visualization.arrayToDataTable([
-        ['Time', 'Page Views'],
-        [2001, 75],
-        [2002, 32],
-        [2003, 103],
-        [2004, 21],
-        [2005, 52],
-        [2006, 32],
-        [2007, 12]
-    ])
+function drawChart(request){
+    const response = JSON.parse(request.response)
+    const rows = response.result.rows
+
+    const formattedRows = []
+
+    rows.forEach(function(row){
+        const year = row.dimensions[0].slice(0, 4)
+        const month = row.dimensions[0].slice(4, 6)
+        const day = row.dimensions[0].slice(6)
+        const date = new Date(year, month, day)
+        const views = parseInt(row.metrics[0].values[0])
+        formattedRows.push([date, views])
+    })
+
+    // date returns days formatted YYYYMMDD. can split this and use it as the date input
+    console.log('formatted rows post processing ', formattedRows)
 
     const options = {
         title: `Page Views From ${startDate} - ${endDate}`,
+        vAxis: {title: 'Page Views'},
         curveType: 'function',
-        legend: {position: 'bottom'},
+        legend: {position: 'none'},
         // super arbitrary rn: FIND A WAY to replace so that height is the remainder of the parent div 
         height: 500,
         colors: ['#e6693e']
     }
 
+    const data = new google.visualization.DataTable()
+    data.addColumn('date', 'Day')
+    data.addColumn('number', 'Page Views')
+    data.addRows(formattedRows)
+
+
     let chart = new google.visualization.LineChart(chartDiv)
     chart.draw(data, options)
 }
 
+makeRequest(dailyGraph, drawChart)
 
 /***** Update timeframe and/or section *****/
 const newSearch = document.getElementById('main-form')
@@ -350,25 +365,3 @@ $('.nav-tabs a').on('click', function (e) {
         // all the makeRequest functions
     }
 */
-
-// Calculate and display how many users visted over the 30 days inbetween Start and End Date.
-/*function time_range() {
-    var days = (new Date($('#input-end').val()) - new Date($('#input-start').val())) / 8.64e+7
-    $('.time-range').text('over the ' + (new Date().toISOString().slice(0,10) == $('#input-end').val() ? 'last ' : 'selected ') + (days === 365 ? 'year' : days < 90 ? days % 7 === 0 ? days === 7 ? 'week' : days / 7 + ' weeks' : days + ' days' : ~~(days / 30) + ' months'))
-
-    var total_users = ~~(days * 1602.5)
-    var text = ''
-    switch (total_users.toString().length) {
-        case 1:
-        case 2:
-        case 3: 
-        case 4: text = total_users; break;
-        case 5:
-        case 6: text = ~~(total_users / 1000) + ' thousand'; break;
-        case 7: 
-        case 8: 
-        case 9: text = ~~(total_users / 1000000) + ' million'; break;
-    }
-
-    $('.total-users').text(text)
-}*/
