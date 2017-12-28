@@ -266,34 +266,32 @@ makeRequest(activeUsers, activeRequest)
 
 
 /***** Pageviews over Time Graph *****/
+const addRangeForm = document.getElementById('add-range')
 const chartDiv = document.getElementById('chart-div')
 google.charts.load('current', {'packages':['corechart']})
 google.charts.setOnLoadCallback(drawChart)
-// make it responsive
+// makes it responsive
 window.onresize = function(){drawChart()}
 
-// TODO: accept an array of pageViews to populate the jawn
+// pass the array of comparison range IF it exists
 function drawChart(request){
     if (!request) return
     const response = JSON.parse(request.response)
     const rows = response.result.rows
-
     const formattedRows = []
 
     rows.forEach(function(row){
         const year = row.dimensions[0].slice(0, 4)
-        const month = row.dimensions[0].slice(4, 6)
-        const day = row.dimensions[0].slice(6)
+        const month = row.dimensions[0].slice(4, 6) - 1
+        const day = row.dimensions[0].slice(6) - 1
         const date = new Date(year, month, day)
         const views = parseInt(row.metrics[0].values[0])
-        formattedRows.push([date, views])
+        formattedRows.push([date, views, 0])
     })
 
-    // date returns days formatted YYYYMMDD. can split this and use it as the date input
-    console.log('formatted rows post processing ', formattedRows)
-
     const options = {
-        title: `Page Views From ${startDate} - ${endDate}`,
+        title: `Page Views From ${startDate} : ${endDate}`,
+        legend: 'right',
         vAxis: {
             title: 'Page Views',
             viewWindow:{min: 0}
@@ -302,20 +300,52 @@ function drawChart(request){
         curveType: 'function',
         legend: {position: 'none'},
         height: 500,
-        colors: ['#e6693e']
+        colors: ['#e6693e', '8338EC']
     }
 
     const data = new google.visualization.DataTable()
     data.addColumn('date', 'Day')
     data.addColumn('number', 'Page Views')
+    data.addColumn('number', 'Previous Page Views')
     data.addRows(formattedRows)
 
+    console.log('formatted rows initially ', formattedRows)
 
     let chart = new google.visualization.LineChart(chartDiv)
     chart.draw(data, options)
+
+    // onsubmit, make a request for the information under the new dates
+    addRangeForm.onclick = function(){
+        let rangeStart = document.getElementById('range-start')
+        rangeStart = new Date(rangeStart.value).toISOString().slice(0, 10)
+        let rangeEnd = document.getElementById('range-end')
+        rangeEnd = new Date(rangeEnd.value).toISOString().slice(0, 10)
+        const rangeUrl = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
+        makeRequest(rangeUrl, addRange)
+    }
+
+    function addRange(request){
+        // get new rows data, format it and then pass it into drawChart..
+        const response = JSON.parse(request.response)
+        const rows = response.result.rows
+        const rangeRows = []
+
+        rows.forEach(function(row){
+            const year = row.dimensions[0].slice(0, 4)
+            const month = row.dimensions[0].slice(4, 6) - 1
+            const day = row.dimensions[0].slice(6) - 1
+            const date = new Date(year, month, day)
+            const views = parseInt(row.metrics[0].values[0])
+            rangeRows.push([date, 0, views])
+        })
+
+        data.addRows(rangeRows)
+        chart.draw(data, options)
+    }
 }
 
 makeRequest(dailyGraph, drawChart)
+
 
 /***** Update timeframe and/or section *****/
 const newSearch = document.getElementById('main-form')
