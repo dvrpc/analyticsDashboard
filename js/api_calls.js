@@ -274,6 +274,7 @@ window.onresize = function(){drawChart()}
 
 // TODO: accept an array of pageViews to populate the jawn
 function drawChart(request){
+    if (!request) return
     const response = JSON.parse(request.response)
     const rows = response.result.rows
 
@@ -293,10 +294,13 @@ function drawChart(request){
 
     const options = {
         title: `Page Views From ${startDate} - ${endDate}`,
-        vAxis: {title: 'Page Views'},
+        vAxis: {
+            title: 'Page Views',
+            viewWindow:{min: 0}
+        },
+        hAxis:{title: 'Date'},
         curveType: 'function',
         legend: {position: 'none'},
-        // super arbitrary rn: FIND A WAY to replace so that height is the remainder of the parent div 
         height: 500,
         colors: ['#e6693e']
     }
