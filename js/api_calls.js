@@ -1,6 +1,8 @@
 // query string variables 
+// with the changes to the homepage, today will be eliminated and startDate/endDate will always be whatever is the localStorage item
 const path = localStorage.getItem('page')
 const today = new Date().toISOString().slice(0, 10)
+console.log('today is ', today)
 let startDate = localStorage.getItem('startDate') || today
 let endDate = localStorage.getItem('endDate') || today
 

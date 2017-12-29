@@ -57,23 +57,30 @@
 
 		<form id="main-form" action="drilldown.htm">
 			<fieldset>
-				<legend> Enter The Webpage and Timeframe In Which You Want Analytics </legend>
+				<legend>Enter The Webpage and Timeframe For Analytics</legend>
 				<div class="options-form">
 					<input name="timefame" id="user-input" type="search" value="www.dvrpc.org/" class="search-for-site" name="main-search">
-					<label for="today">Today</label><input name="timefame" id="today" type="radio" checked>
-					<label for="last-week">Last Week</label><input name="timefame" id="last-week" type="radio">
-					<label for="last-month">Last Month</label><input name="timefame" id="last-month" type="radio">
-					<label for="last-year">Last Year</label><input name="timefame" id="last-year" type="radio">
+					<label for="today">Today</label><input name="timeframe" id="today" type="radio" checked>
+					<label for="last-week">Last Week</label><input name="timeframe" id="last-week" type="radio">
+					<label for="last-month">Last Month</label><input name="timeframe" id="last-month" type="radio">
+					<label for="last-year">Last Year</label><input name="timeframe" id="last-year" type="radio">
 					<!-- <label for="custon">Custom</label><input name="timeframe" id="custom" type="date"> -->
 					<button class="btn btn-primary" name="search">Search</button>
 				</div>
 			</fieldset>
 		</form>
 
-		<hr id="main-page-hr" />
-		
-		<h1 id="top-pages-header"> Current Top 4 Pages </h1>
+<!-- 		<hr id="main-page-hr" />
+ -->		
+		<h1 id="top-pages-header"> Todays Top 5 Pages </h1>
 		<div class="top-pages">
+			<div class="top-page-box">
+				<h3>dvrpc.org</h3>
+				<hr />
+				<h2>Page Views</h2> <p></p>
+				<h2> Sessions </h2> <p></p>
+				<h2>Avg. Time on Page</h2> <p></p>
+			</div>
 			<div class="top-page-box">
 				<h3>dvrpc.org</h3>
 				<hr />
