@@ -24,7 +24,6 @@ const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${start
 const dailyGraph = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
 
 
-
 /**** Functions to set up the API Calls *****/
 function createCORSRequest(method, url) {
     const xhr = new XMLHttpRequest()
@@ -266,11 +265,11 @@ makeRequest(activeUsers, activeRequest)
 
 
 /***** Pageviews over Time Graph *****/
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const addRangeForm = document.getElementById('add-range')
 const chartDiv = document.getElementById('chart-div')
 google.charts.load('current', {'packages':['corechart']})
 google.charts.setOnLoadCallback(drawChart)
-// makes it responsive
 window.onresize = function(){drawChart()}
 
 // pass the array of comparison range IF it exists
@@ -282,7 +281,10 @@ function drawChart(request){
 
     rows.forEach(function(row){
         const year = row.dimensions[0].slice(0, 4)
-        const month = row.dimensions[0].slice(4, 6) - 1
+        // a number from 0-11
+        let month = row.dimensions[0].slice(4, 6) - 1
+        const testMonth = months[month]
+        console.log('month is ', testMonth)
         const day = row.dimensions[0].slice(6) - 1
         const date = new Date(year, month, day)
         const views = parseInt(row.metrics[0].values[0])
@@ -339,6 +341,8 @@ function drawChart(request){
             rangeRows.push([date, 0, views])
         })
 
+        // this works now but the problem when comparing between different years is they don't overlay on months (b/c of the different years)
+        // the solution would be to just display months on the x-axis, but how to set that up with corresponding days? shoes. 
         data.addRows(rangeRows)
         chart.draw(data, options)
     }

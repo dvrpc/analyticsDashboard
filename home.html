@@ -56,9 +56,18 @@
 		</div>
 
 		<form id="main-form" action="drilldown.htm">
-			<em><h1> get analytics @ </h1></em>
-			<input id="user-input" type="search" value="www.dvrpc.org/" class="search-for-site" name="main-search">
-			<button class="btn btn-primary" name="search">Go</button>
+			<fieldset>
+				<legend> Enter The Webpage and Timeframe In Which You Want Analytics </legend>
+				<div class="options-form">
+					<input name="timefame" id="user-input" type="search" value="www.dvrpc.org/" class="search-for-site" name="main-search">
+					<label for="today">Today</label><input name="timefame" id="today" type="radio" checked>
+					<label for="last-week">Last Week</label><input name="timefame" id="last-week" type="radio">
+					<label for="last-month">Last Month</label><input name="timefame" id="last-month" type="radio">
+					<label for="last-year">Last Year</label><input name="timefame" id="last-year" type="radio">
+					<!-- <label for="custon">Custom</label><input name="timeframe" id="custom" type="date"> -->
+					<button class="btn btn-primary" name="search">Search</button>
+				</div>
+			</fieldset>
 		</form>
 
 		<hr id="main-page-hr" />
