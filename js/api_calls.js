@@ -295,7 +295,7 @@ function drawChart(request){
         ]
     }, {
         axisX: {
-            type: Chartist.FixedScaleAxis,
+            type: Chartist.AutoScaleAxis,
             divisor: 5,
             labelInterpolationFnc: function(value){
                 return moment(value).format('MMM D')
