@@ -26,7 +26,15 @@
     color: black;
 }
 #chart-div{
-    width: 100%;
+    margin: 0 auto;
+    width: 95%;
+}
+.ct-series-a .ct-line {
+    stroke-width: 2px;
+    point-size: 1px;
+}
+.ct-series-a .ct-point{
+    stroke-width: 1px;
 }
 .section-hourly-users table {
     table-layout: fixed;

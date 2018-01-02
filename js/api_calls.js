@@ -294,6 +294,7 @@ function drawChart(request){
             }
         ]
     }, {
+        showArea: true,
         axisX: {
             type: Chartist.AutoScaleAxis,
             divisor: 5,
