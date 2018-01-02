@@ -1,11 +1,9 @@
 // query string variables 
 // with the changes to the homepage, today will be eliminated and startDate/endDate will always be whatever is the localStorage item
 const path = localStorage.getItem('page')
+const metricsSince = localStorage.getItem('metricsSince')
 let startDate = localStorage.getItem('startDate')
 let endDate = localStorage.getItem('endDate')
-
-console.log('start date is ', startDate)
-console.log('end date is ', endDate)
 
 // set the main heading & the range subheading
 const mainHeader = document.querySelector('#results-path')
@@ -268,7 +266,6 @@ makeRequest(activeUsers, activeRequest)
 
 
 /***** Pageviews over Time Graph *****/
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const addRangeForm = document.getElementById('add-range')
 const chartDiv = document.getElementById('chart-div')
 google.charts.load('current', {'packages':['corechart']})
@@ -286,8 +283,6 @@ function drawChart(request){
         const year = row.dimensions[0].slice(0, 4)
         // a number from 0-11
         let month = row.dimensions[0].slice(4, 6) - 1
-        const testMonth = months[month]
-        console.log('month is ', testMonth)
         const day = row.dimensions[0].slice(6) - 1
         const date = new Date(year, month, day)
         const views = parseInt(row.metrics[0].values[0])
@@ -295,7 +290,7 @@ function drawChart(request){
     })
 
     const options = {
-        title: `Page Views From ${startDate} : ${endDate}`,
+        title: `Page Views Since: ${metricsSince ? metricsSince : startDate}`,
         legend: 'right',
         vAxis: {
             title: 'Page Views',
@@ -359,15 +354,17 @@ const newSearch = document.getElementById('main-form')
 
 function updateData(){
     let start = document.getElementById('input-start')
-    start = new Date(start.value).toISOString().slice(0, 10)
+    start.value ? start = new Date(start.value).toISOString().slice(0, 10) : start = null
     let end = document.getElementById('input-end')
-    end = new Date(end.value).toISOString().slice(0, 10)
+    end.value ? end = new Date(end.value).toISOString().slice(0, 10) : end = null
     let newPath = document.getElementById('input-path')
     newPath = newPath.value.slice(14)
 
     path != newPath ? localStorage.setItem('page', newPath) : null
     start ? localStorage.setItem('startDate', start) : null
     end ? localStorage.setItem('endDate', end) : null
+
+    console.log('why is update data not doing anything anymore wtf')
 }
 newSearch.onsubmit = function(){updateData()}
 // the conditionals here add an error class to the date picker if the dates are invalid. USE it.
