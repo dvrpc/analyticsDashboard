@@ -7,11 +7,9 @@ let endDate = localStorage.getItem('endDate')
 
 // set the main heading & the range subheading
 const mainHeader = document.querySelector('#results-path')
-const rangeHeaderStart = document.getElementById('metrics-start')
-const rangeHeaderEnd = document.getElementById('metrics-end')
+const rangeHeader = document.getElementById('metrics-start')
 mainHeader.textContent += path
-rangeHeaderStart.textContent = startDate
-rangeHeaderEnd.textContent = endDate
+rangeHeader.textContent = metricsSince
 
 
 /***** API URL's *****/
@@ -268,85 +266,53 @@ makeRequest(activeUsers, activeRequest)
 /***** Pageviews over Time Graph *****/
 const addRangeForm = document.getElementById('add-range')
 const chartDiv = document.getElementById('chart-div')
-google.charts.load('current', {'packages':['corechart']})
-google.charts.setOnLoadCallback(drawChart)
-window.onresize = function(){drawChart()}
 
-// pass the array of comparison range IF it exists
 function drawChart(request){
-    if (!request) return
+    const ogData = []
     const response = JSON.parse(request.response)
     const rows = response.result.rows
-    const formattedRows = []
 
+    console.log('rows are ', rows)
     rows.forEach(function(row){
         const year = row.dimensions[0].slice(0, 4)
-        // a number from 0-11
-        let month = row.dimensions[0].slice(4, 6) - 1
+        const month = row.dimensions[0].slice(4, 6) - 1
         const day = row.dimensions[0].slice(6) - 1
         const date = new Date(year, month, day)
-        const views = parseInt(row.metrics[0].values[0])
-        formattedRows.push([date, views, 0])
+        ogData.push({
+            x: date,
+            y: row.metrics[0].values[0]
+        })
     })
 
-    const options = {
-        title: `Page Views Since: ${metricsSince ? metricsSince : startDate}`,
-        legend: 'right',
-        vAxis: {
-            title: 'Page Views',
-            viewWindow:{min: 0}
-        },
-        hAxis:{title: 'Date'},
-        curveType: 'function',
-        legend: {position: 'none'},
-        height: 500,
-        colors: ['#e6693e', '8338EC']
-    }
+    console.log('ogdata is ', ogData)
 
-    const data = new google.visualization.DataTable()
-    data.addColumn('date', 'Day')
-    data.addColumn('number', 'Page Views')
-    data.addColumn('number', 'Previous Page Views')
-    data.addRows(formattedRows)
-
-    console.log('formatted rows initially ', formattedRows)
-
-    let chart = new google.visualization.LineChart(chartDiv)
-    chart.draw(data, options)
-
-    // onsubmit, make a request for the information under the new dates
-    addRangeForm.onclick = function(){
-        let rangeStart = document.getElementById('range-start')
-        rangeStart = new Date(rangeStart.value).toISOString().slice(0, 10)
-        let rangeEnd = document.getElementById('range-end')
-        rangeEnd = new Date(rangeEnd.value).toISOString().slice(0, 10)
-        const rangeUrl = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
-        makeRequest(rangeUrl, addRange)
-    }
-
-    function addRange(request){
-        // get new rows data, format it and then pass it into drawChart..
-        const response = JSON.parse(request.response)
-        const rows = response.result.rows
-        const rangeRows = []
-
-        rows.forEach(function(row){
-            const year = row.dimensions[0].slice(0, 4)
-            const month = row.dimensions[0].slice(4, 6) - 1
-            const day = row.dimensions[0].slice(6) - 1
-            const date = new Date(year, month, day)
-            const views = parseInt(row.metrics[0].values[0])
-            rangeRows.push([date, 0, views])
-        })
-
-        // this works now but the problem when comparing between different years is they don't overlay on months (b/c of the different years)
-        // the solution would be to just display months on the x-axis, but how to set that up with corresponding days? shoes. 
-        data.addRows(rangeRows)
-        chart.draw(data, options)
-    }
+    const chart = new Chartist.Line(chartDiv, {
+        series: [
+            {
+                name: 'og',
+                data: ogData
+            }
+        ]
+    }, {
+        axisX: {
+            type: Chartist.FixedScaleAxis,
+            divisor: 5,
+            labelInterpolationFnc: function(value){
+                return moment(value).format('MMM D')
+            }
+        }
+    })
 }
 
 makeRequest(dailyGraph, drawChart)
+
+addRangeForm.onclick = function(){
+    let rangeStart = document.getElementById('range-start')
+    rangeStart = new Date(rangeStart.value).toISOString().slice(0, 10)
+    let rangeEnd = document.getElementById('range-end')
+    rangeEnd = new Date(rangeEnd.value).toISOString().slice(0, 10)
+    const rangeUrl = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
+}
 
 
 /***** Update timeframe and/or section *****/

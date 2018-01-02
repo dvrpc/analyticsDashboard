@@ -47,6 +47,9 @@ form.onsubmit = function(){
 			start = lastYear
 			localStorage.setItem('metricsSince', ' Last Year')
 			break
+		// TODO: create a custom case that:
+			// sets start and end date to the custom parameters
+			// sets metricsSince as 'startDate : endDate'
 	}
 
 	localStorage.setItem('startDate', start)
