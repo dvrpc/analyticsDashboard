@@ -266,54 +266,76 @@ makeRequest(activeUsers, activeRequest)
 /***** Pageviews over Time Graph *****/
 const addRangeForm = document.getElementById('add-range')
 const chartDiv = document.getElementById('chart-div')
+const ogData = []
 
-function drawChart(request){
-    const ogData = []
-    const response = JSON.parse(request.response)
-    const rows = response.result.rows
+function drawChart(request, comp){
+    if(request){    
+        const response = JSON.parse(request.response)
+        const rows = response.result.rows
 
-    console.log('rows are ', rows)
-    rows.forEach(function(row){
-        const year = row.dimensions[0].slice(0, 4)
-        const month = row.dimensions[0].slice(4, 6) - 1
-        const day = row.dimensions[0].slice(6) - 1
-        const date = new Date(year, month, day)
-        ogData.push({
-            x: date,
-            y: row.metrics[0].values[0]
+        rows.forEach(function(row){
+            const year = row.dimensions[0].slice(0, 4)
+            const month = row.dimensions[0].slice(4, 6) - 1
+            const day = row.dimensions[0].slice(6) - 1
+            const date = new Date(year, month, day)
+            ogData.push({
+                x: date,
+                y: row.metrics[0].values[0]
+            })
         })
-    })
+    }
 
-    console.log('ogdata is ', ogData)
 
     const chart = new Chartist.Line(chartDiv, {
         series: [
             {
-                name: 'og',
+                name: 'Original',
                 data: ogData
+            },
+            {
+                name: 'Comparison',
+                data: comp? comp : []
             }
         ]
     }, {
         showArea: true,
         axisX: {
             type: Chartist.AutoScaleAxis,
-            divisor: 5,
             labelInterpolationFnc: function(value){
                 return moment(value).format('MMM D')
             }
         }
     })
+    
+    addRangeForm.onclick = function(){
+        let rangeStart = document.getElementById('range-start')
+        rangeStart = new Date(rangeStart.value).toISOString().slice(0, 10)
+        let rangeEnd = document.getElementById('range-end')
+        rangeEnd = new Date(rangeEnd.value).toISOString().slice(0, 10)
+        const rangeUrl = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
+        makeRequest(rangeUrl, addRange)
+    }
+
+    function addRange(request){
+        const compData = []
+        const response = JSON.parse(request.response)
+        const rows = response.result.rows
+
+        rows.forEach(function(row){
+            const year = row.dimensions[0].slice(0, 4)
+            const month = row.dimensions[0].slice(4, 6) - 1
+            const day = row.dimensions[0].slice(6) - 1
+            const date = new Date(year, month, day)
+            compData.push({
+                x: date,
+                y: row.metrics[0].values[0]
+            })
+        })
+        drawChart(null, compData)
+    }
 }
 
 makeRequest(dailyGraph, drawChart)
-
-addRangeForm.onclick = function(){
-    let rangeStart = document.getElementById('range-start')
-    rangeStart = new Date(rangeStart.value).toISOString().slice(0, 10)
-    let rangeEnd = document.getElementById('range-end')
-    rangeEnd = new Date(rangeEnd.value).toISOString().slice(0, 10)
-    const rangeUrl = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
-}
 
 
 /***** Update timeframe and/or section *****/
