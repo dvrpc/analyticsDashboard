@@ -1,7 +1,6 @@
 // query string variables 
 // with the changes to the homepage, today will be eliminated and startDate/endDate will always be whatever is the localStorage item
 const path = localStorage.getItem('page')
-const metricsSince = localStorage.getItem('metricsSince')
 let startDate = localStorage.getItem('startDate')
 let endDate = localStorage.getItem('endDate')
 
@@ -9,7 +8,7 @@ let endDate = localStorage.getItem('endDate')
 const mainHeader = document.querySelector('#results-path')
 const rangeHeader = document.getElementById('metrics-start')
 mainHeader.textContent += path
-rangeHeader.textContent = metricsSince
+rangeHeader.textContent = `${startDate} : ${endDate}`
 
 
 /***** API URL's *****/
@@ -273,6 +272,8 @@ function drawChart(request, comp){
         const response = JSON.parse(request.response)
         const rows = response.result.rows
 
+        console.log('rows is ', rows)
+
         rows.forEach(function(row){
             const year = row.dimensions[0].slice(0, 4)
             const month = row.dimensions[0].slice(4, 6) - 1
@@ -356,19 +357,6 @@ function updateData(){
     console.log('why is update data not doing anything anymore wtf')
 }
 newSearch.onsubmit = function(){updateData()}
-// the conditionals here add an error class to the date picker if the dates are invalid. USE it.
-/*    $('#input-start, #input-end').prop('max', new Date().toISOString().slice(0, 10)).on('change', function () {
-        if ($(this).val().length === 0 || isNaN(new Date($(this).val())) || new Date() - new Date($(this).val()) < 0) {
-            $(this).closest('.form-group').addClass('has-error')
-        }
-        else if (new Date($('#input-end').val()) - new Date($('#input-start').val()) < 1) {
-            $('#input-start, #input-end').closest('.form-group').addClass('has-error')
-        }
-        else {
-            $('#input-start, #input-end').closest('.form-group').removeClass('has-error')
-            time_range()
-        }
-    })*/
 
 
 /***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
@@ -381,14 +369,11 @@ $('.nav-tabs a').on('click', function (e) {
     $($(this).attr('href')).show()
 })
 
-
-/* TODO (bringing it all together - last step): 
-    put every makeRequest function in a main function that executes onpage load, whenever start/end date are updated
-    and whenever a new website section is typed into the search bar. Paramaters for the main function will be the
-    makeRequest function, startDate and endDate. the dates refresh the query strings (this is gonna be complicated)
-    ex:
-    mainFunc(startDate, endDate, urlArray){
-        urlArray.forEach url => 
-        // all the makeRequest functions
-    }
-*/
+/*// get a handle of the clicked one (give each tab a class)
+let activeTab = document.querySelector('.active')
+let tabs = document.querySelectorAll('.active li')
+// get a handle of 'visible'
+// if( clicked != visible){
+    //clicked.classList.add(visible)
+    //visible.classList.remove(visible)
+// tricky part: need to make the corresponding divs visible. do later.*/

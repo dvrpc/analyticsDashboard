@@ -5,6 +5,7 @@ body{
 	overflow-x: hidden;
 }
 
+
 /* main search area */
 .options-form{
 	padding: 2% 0 4% 0;
@@ -27,8 +28,9 @@ legend{
 	border: 0;
 	font-size: 2em;
 }
-.options-form label{
-	margin: 0 0.5% 0 1%;
+#reportrange{
+	margin: 0 2% 0 2%;
+	cursor: pointer;
 }
 .options-form button{
 	margin-left: 1%;
@@ -42,11 +44,7 @@ legend{
 	text-align: left;
 	padding: 1% 5% 1% 0.5%;
 }
-#main-page-hr{
-	margin: 0 auto;
-	margin-top: 3%;
-	width: 90%;
-}
+
 
 /* top pages quick info */
 #top-pages-header{
@@ -127,6 +125,7 @@ legend{
 	padding: 7px 7px 7px 15px;
 	font-style: italic;
 }
+
 
 /* media queries */
 @media (max-width: 768px){
