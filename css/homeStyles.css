@@ -12,6 +12,7 @@ body{
 	justify-content: center;
 	align-items: center;
 	font-size: 1.5em;
+	display: relative;
 }
 fieldset{
 	margin: 0 auto;
@@ -21,7 +22,8 @@ fieldset{
 legend{
 	color: #0078ae;
 	margin-left: 2%;
-	width: 39%;
+	margin-right: 0;
+	width: 24em;
 	border: 0;
 	font-size: 2em;
 }
@@ -72,6 +74,7 @@ legend{
 } 
 .top-page-box h3{
 	overflow-x: scroll;
+	white-space: nowrap;
 }
 .top-page-box:hover{
 	background: #e7df8b;
@@ -97,22 +100,22 @@ legend{
 	width: 90%;
 	color: rgba(0,0,0,0.8);
 }
-tr:nth-child(even){
+#reference-table tr:nth-child(even){
 	background-color: #ddd;
 }
-th{
+#reference-table th{
 	text-align: left;
 	font-size: 1.5em;
 	background: #0078ae;
 	color: #f9fafb;
 }
-td{
+#reference-table td{
 	padding: 1%;
 }
-tr td:first-child{
+#reference-table tr td:first-child{
 	font-weight: 900;
 }
-tr{
+#reference-table tr{
 	font-size: 1.4em;
 	margin: 0 5% 0 5%;
 }
@@ -126,3 +129,11 @@ tr{
 }
 
 /* media queries */
+@media (max-width: 768px){
+	.options-form{
+		flex-direction: column;
+	}
+	legend{
+		font-size: 1.5em;
+	}
+}
