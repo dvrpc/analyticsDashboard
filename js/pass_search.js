@@ -6,8 +6,8 @@ const dateObj = new Date()
 const day = dateObj.getDate()
 let thisMonth = dateObj.getMonth()
 const year = dateObj.getFullYear()
-let startDate = `${year}-${thisMonth +  1}-${day}`
-let endDate = startDate
+let start = `${year}-${thisMonth +  1}-${day}`
+let end = start
 
 $(function() {
 
@@ -35,16 +35,18 @@ $(function() {
 
 $('#reportrange').on('apply.daterangepicker', function(event, picker) {
 	const dates = this.textContent.split('-')
-	startDate = new Date(dates[0]).toISOString().slice(0, 10)
-	endDate = new Date(dates[1]).toISOString().slice(0, 10)
+	start = new Date(dates[0]).toISOString().slice(0, 10)
+	end = new Date(dates[1]).toISOString().slice(0, 10)
 })
 
 searchQuery.onkeyup = function() {
 	pageURL = searchQuery.value
 }
 
+// when plugging this in to the main jawn - only update if pageURL, startDate or endDate have values. This allows people to update 
+// all three, or any combination of the three with predictable results. 
 form.onsubmit = function(){
 	localStorage.setItem('page', pageURL.slice(14))
-	localStorage.setItem('startDate', startDate)
-	localStorage.setItem('endDate', endDate)
+	localStorage.setItem('startDate', start)
+	localStorage.setItem('endDate', end)
 }

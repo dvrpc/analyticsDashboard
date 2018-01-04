@@ -16,6 +16,23 @@
     font-size: 4em;
     font-weight: bold;
 }
+.vertical-flex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#reportrange{
+    margin: 0 1% 0 1%;
+    cursor: pointer;
+}
+#range-form p{
+    font-weight: 600;
+    margin-right: 1%;
+}
+#range-form label{
+    padding-left: 1%;
+}
+
 .range-metrics-header{
     text-align: center;
     font-size: 2em;

@@ -7,6 +7,7 @@ let endDate = localStorage.getItem('endDate')
 // set the main heading & the range subheading
 const mainHeader = document.querySelector('#results-path')
 const rangeHeader = document.getElementById('metrics-start')
+console.log('path is ', path)
 mainHeader.textContent += path
 rangeHeader.textContent = `${startDate} : ${endDate}`
 
@@ -272,8 +273,6 @@ function drawChart(request, comp){
         const response = JSON.parse(request.response)
         const rows = response.result.rows
 
-        console.log('rows is ', rows)
-
         rows.forEach(function(row){
             const year = row.dimensions[0].slice(0, 4)
             const month = row.dimensions[0].slice(4, 6) - 1
@@ -337,26 +336,6 @@ function addRange(request){
 }
 
 makeRequest(dailyGraph, drawChart)
-
-
-/***** Update timeframe and/or section *****/
-const newSearch = document.getElementById('main-form')
-
-function updateData(){
-    let start = document.getElementById('input-start')
-    start.value ? start = new Date(start.value).toISOString().slice(0, 10) : start = null
-    let end = document.getElementById('input-end')
-    end.value ? end = new Date(end.value).toISOString().slice(0, 10) : end = null
-    let newPath = document.getElementById('input-path')
-    newPath = newPath.value.slice(14)
-
-    path != newPath ? localStorage.setItem('page', newPath) : null
-    start ? localStorage.setItem('startDate', start) : null
-    end ? localStorage.setItem('endDate', end) : null
-
-    console.log('why is update data not doing anything anymore wtf')
-}
-newSearch.onsubmit = function(){updateData()}
 
 
 /***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
