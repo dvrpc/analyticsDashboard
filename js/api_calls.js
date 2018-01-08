@@ -265,60 +265,63 @@ makeRequest(activeUsers, activeRequest)
 /***** Pageviews over Time Graph *****/
 const addRangeForm = document.getElementById('add-range')
 const chartDiv = document.getElementById('chart-div')
-const initialChartData = []
 
-function drawChart(request, comp){
-    if(request){    
-        const response = JSON.parse(request.response)
-        const rows = response.result.rows
+function drawChart(request, chartDiv){
+    const initialChartData = []
 
-        rows.forEach(function(row){
-            const year = row.dimensions[0].slice(0, 4)
-            const month = row.dimensions[0].slice(4, 6) - 1
-            const day = row.dimensions[0].slice(6) - 1
-            const date = new Date(year, month, day)
-            initialChartData.push({
-                x: date,
-                y: row.metrics[0].values[0]
-            })
+    const response = JSON.parse(request.response)
+    console.log('formatted response si ', response)
+    const rows = response.result.rows
+
+    rows.forEach(function(row){
+        const year = row.dimensions[0].slice(0, 4)
+        const month = row.dimensions[0].slice(4, 6) - 1
+        const day = row.dimensions[0].slice(6) - 1
+        const date = new Date(year, month, day)
+        initialChartData.push({
+            x: date,
+            y: row.metrics[0].values[0]
         })
-    }
+    })
 
-    // instead of chartDiv, pass a parameter here so that I can use this function w/the newly create chart
+    // TO FINISH: instead of chartDiv, pass a parameter here so that I can use this function w/the newly create chart
     const chart = new Chartist.Line(chartDiv, {
         series: [
             {
                 name: 'Original',
                 data: initialChartData
-            },
-            {
-                name: 'Comparison',
-                data: comp ? comp : []
             }
         ]
     }, {
         showArea: true,
         axisX: {
             type: Chartist.AutoScaleAxis,
+            // TODO: bool for hourly breakdown if start and end are the same
             labelInterpolationFnc: function(value){
                 return moment(value).format('MMM D')
             }
         }
     })
-    
 }
-console.log('startDate is ', startDate)
 
+// helper function to deal with some scoping stuff
+function invokeChart(request){
+    console.log('invoke chart request ', request)
+    drawChart(request, chartDiv)
+}
+
+makeRequest(dailyGraph, invokeChart)
+
+addRangeForm.onclick = function(){
     let radioButtons = document.getElementsByName('comp')
     // get date, month, year
     const date = new Date()
     // day, month and year should be pulled from startDate, not todays date
+    // TODO: fix this - something isn't right
     let testDay = startDate.substring(8)
     let testMonth = startDate.substring(5, 7)
     let testYear = startDate.substring(0, 4)
-    console.log('testDay is ', testDay)
-    console.log('testMonth is ', testMonth)
-    console.log('testYear is ', testYear)
+
     let selectedRadioButton;
     let rangeStart;
     let rangeEnd = startDate
@@ -338,57 +341,43 @@ console.log('startDate is ', startDate)
             // 
             const yesterday = new Date(testYear, testMonth, date.getDay() - 1).toISOString().slice(0, 10)
             console.log('yesterday is ', yesterday)
-            // 
-            /*rangeStart = 
-            rangeEnd = rangeStart*/
+            rangeStart = yesterday
             break
         case 'week':
             // calculate previous week
             const lastWeek = new Date(testYear, testMonth, date.getDay() - 7).toISOString().slice(0, 10)
             console.log('last week is ', lastWeek)
-            // rangeStart = startDate - 1 week
+            rangeStart = lastWeek
             break
         case 'month':
-            // calculate previous month
-            // rangeStart = startDate - 1 month
             const lastMonth = new Date(testYear, date.getMonth() - 1, testDay).toISOString().slice(0, 10)
             console.log('lastMonth is ', lastMonth)
+            rangeStart = lastMonth
             break
         case 'year':
             rangeStart = testYear - 1 + startDate.slice(4)
-            console.log('rangeStart is ', rangeStart)
             break
     }
-addRangeForm.onclick = function(){
 
     const rangeUrl = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
     makeRequest(rangeUrl, addRange)
 }
 
 function addRange(request){
-    // create new chart div above current chart div
-    // add a class that halfs its display
-    // add that class to the old chart (removing the golden ratio one)
-    const compData = []
-    const response = JSON.parse(request.response)
-    const rows = response.result.rows
 
-    rows.forEach(function(row){
-        const year = row.dimensions[0].slice(0, 4)
-        const month = row.dimensions[0].slice(4, 6) - 1
-        const day = row.dimensions[0].slice(6) - 1
-        const date = new Date(year, month, day)
-        compData.push({
-            x: date,
-            y: row.metrics[0].values[0]
-        })
-    })
+    console.log('addrange request ', request)
+    // create new chart div above current chart div
+    const rangeChart = document.createElement('div')
+    rangeChart.classList.add('ct-chart')
+    // this will change - find the right ratio to display two on top of each other w/o taking up too much space
+    rangeChart.classList.add('ct-major-tenth')
+    const parentDiv = document.getElementById('charts-and-tabs')
+    parentDiv.insertAdjacentElement('afterbegin', rangeChart)
     
     // call drawChart and pass the handle for the new chart div into it
-    drawChart(null, compData)
+    drawChart(request, rangeChart)
 }
 
-makeRequest(dailyGraph, drawChart)
 
 /***** Comparison Function *****/
 
