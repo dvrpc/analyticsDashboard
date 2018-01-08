@@ -174,15 +174,18 @@
                                                     <div class="col-sm-8">
                                                         <div class="ct-chart ct-major-tenth" id="chart-div"></div>
                                                         <form id="range-form" class="form-inline vertical-flex">
-                                                            <p> Compare To: </p>
-                                                            <input type="radio" name="comp" id="previousWeek">
-                                                            <label for="previousWeek"> Previous Week </label>
+                                                            <p> Compare To Previous: </p>
+                                                            <label for="previousWeek">Day</label>
+                                                            <input type="radio" name="comp" id="previousDay" value="day" >
 
-                                                            <input type="radio" name="comp" id="previousWeek">
-                                                            <label for="previousWeek"> Previous Month </label>
+                                                            <label for="previousWeek">Week</label>
+                                                            <input type="radio" name="comp" id="previousWeek" value="week" checked>
 
-                                                            <input type="radio" name="comp" id="previousWeek">
-                                                            <label for="previousWeek"> Previous Year </label>
+                                                            <label for="previousMonth">Month</label>
+                                                            <input type="radio" name="comp" id="previousMonth" value="month" >
+
+                                                            <label for="previousYear">Year</label>
+                                                            <input type="radio" name="comp" id="previousYear" value="year" >
 
                                                             <button type="button" id="add-range" class="btn btn-success">Compare</button>
                                                         </form>

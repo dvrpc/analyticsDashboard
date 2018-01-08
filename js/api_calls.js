@@ -284,6 +284,7 @@ function drawChart(request, comp){
         })
     }
 
+    // instead of chartDiv, pass a parameter here so that I can use this function w/the newly create chart
     const chart = new Chartist.Line(chartDiv, {
         series: [
             {
@@ -306,17 +307,68 @@ function drawChart(request, comp){
     })
     
 }
+console.log('startDate is ', startDate)
 
+    let radioButtons = document.getElementsByName('comp')
+    // get date, month, year
+    const date = new Date()
+    // day, month and year should be pulled from startDate, not todays date
+    let testDay = startDate.substring(8)
+    let testMonth = startDate.substring(5, 7)
+    let testYear = startDate.substring(0, 4)
+    console.log('testDay is ', testDay)
+    console.log('testMonth is ', testMonth)
+    console.log('testYear is ', testYear)
+    let selectedRadioButton;
+    let rangeStart;
+    let rangeEnd = startDate
+    
+    // get the checked radio button
+    for(var i = 0; i < radioButtons.length; i++){
+        if(radioButtons[i].checked){
+            selectedRadioButton = radioButtons[i].value
+            break;
+        }
+    }
+
+    // build yesterday/lastweek/lastmonth/lastyear from startDate 
+    switch(selectedRadioButton){
+        // startDate = yyyy-mm-dd
+        case 'day':
+            // 
+            const yesterday = new Date(testYear, testMonth, date.getDay() - 1).toISOString().slice(0, 10)
+            console.log('yesterday is ', yesterday)
+            // 
+            /*rangeStart = 
+            rangeEnd = rangeStart*/
+            break
+        case 'week':
+            // calculate previous week
+            const lastWeek = new Date(testYear, testMonth, date.getDay() - 7).toISOString().slice(0, 10)
+            console.log('last week is ', lastWeek)
+            // rangeStart = startDate - 1 week
+            break
+        case 'month':
+            // calculate previous month
+            // rangeStart = startDate - 1 month
+            const lastMonth = new Date(testYear, date.getMonth() - 1, testDay).toISOString().slice(0, 10)
+            console.log('lastMonth is ', lastMonth)
+            break
+        case 'year':
+            rangeStart = testYear - 1 + startDate.slice(4)
+            console.log('rangeStart is ', rangeStart)
+            break
+    }
 addRangeForm.onclick = function(){
-    let rangeStart = document.getElementById('range-start')
-    rangeStart = new Date(rangeStart.value).toISOString().slice(0, 10)
-    let rangeEnd = document.getElementById('range-end')
-    rangeEnd = new Date(rangeEnd.value).toISOString().slice(0, 10)
+
     const rangeUrl = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
     makeRequest(rangeUrl, addRange)
 }
 
 function addRange(request){
+    // create new chart div above current chart div
+    // add a class that halfs its display
+    // add that class to the old chart (removing the golden ratio one)
     const compData = []
     const response = JSON.parse(request.response)
     const rows = response.result.rows
@@ -331,6 +383,8 @@ function addRange(request){
             y: row.metrics[0].values[0]
         })
     })
+    
+    // call drawChart and pass the handle for the new chart div into it
     drawChart(null, compData)
 }
 

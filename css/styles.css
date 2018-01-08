@@ -26,11 +26,10 @@
     cursor: pointer;
 }
 #range-form p{
-    font-weight: 600;
-    margin-right: 1%;
+    font-weight: 700;
 }
 #range-form label{
-    padding-left: 1%;
+    padding: 0.5% 0.5% 0 1%;
 }
 
 .range-metrics-header{
