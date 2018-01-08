@@ -1,5 +1,5 @@
 // query string variables 
-// with the changes to the homepage, today will be eliminated and startDate/endDate will always be whatever is the localStorage item
+// with the changes to the home, today will be eliminated and startDate/endDate will always be whatever is the localStorage item
 const path = localStorage.getItem('page')
 let startDate = localStorage.getItem('startDate')
 let endDate = localStorage.getItem('endDate')
@@ -7,7 +7,6 @@ let endDate = localStorage.getItem('endDate')
 // set the main heading & the range subheading
 const mainHeader = document.querySelector('#results-path')
 const rangeHeader = document.getElementById('metrics-start')
-console.log('path is ', path)
 mainHeader.textContent += path
 rangeHeader.textContent = `${startDate} : ${endDate}`
 
@@ -337,6 +336,13 @@ function addRange(request){
 
 makeRequest(dailyGraph, drawChart)
 
+/***** Comparison Function *****/
+
+// get a handle on the radio button lists and find which one was checked
+
+// create a new date object with startDate = start - 1 week and endDate = start 
+
+// graph that jawn. (probably just make a second x-axis and compare them like that)
 
 /***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
 

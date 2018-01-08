@@ -39,14 +39,11 @@ $('#reportrange').on('apply.daterangepicker', function(event, picker) {
 	end = new Date(dates[1]).toISOString().slice(0, 10)
 })
 
-searchQuery.onkeyup = function() {
-	pageURL = searchQuery.value
-}
-
 // when plugging this in to the main jawn - only update if pageURL, startDate or endDate have values. This allows people to update 
 // all three, or any combination of the three with predictable results. 
 form.onsubmit = function(){
-	localStorage.setItem('page', pageURL.slice(14))
+  pageURL = searchQuery.value.slice(14)
+	localStorage.setItem('page', pageURL)
 	localStorage.setItem('startDate', start)
 	localStorage.setItem('endDate', end)
 }
