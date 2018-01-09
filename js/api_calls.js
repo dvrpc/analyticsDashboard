@@ -270,7 +270,6 @@ function drawChart(request, chartDiv){
     const initialChartData = []
 
     const response = JSON.parse(request.response)
-    console.log('formatted response si ', response)
     const rows = response.result.rows
 
     rows.forEach(function(row){
@@ -284,7 +283,6 @@ function drawChart(request, chartDiv){
         })
     })
 
-    // TO FINISH: instead of chartDiv, pass a parameter here so that I can use this function w/the newly create chart
     const chart = new Chartist.Line(chartDiv, {
         series: [
             {
@@ -306,25 +304,25 @@ function drawChart(request, chartDiv){
 
 // helper function to deal with some scoping stuff
 function invokeChart(request){
-    console.log('invoke chart request ', request)
     drawChart(request, chartDiv)
 }
 
 makeRequest(dailyGraph, invokeChart)
+console.log('start date is ', startDate)
+console.log('end date is ', endDate)
 
+// Functions for the comparison chart, should a user make one
+// TODO: REMOVE/REPLACE the initial comparison chart whenever a user decides to create another comparison!
 addRangeForm.onclick = function(){
     let radioButtons = document.getElementsByName('comp')
-    // get date, month, year
-    const date = new Date()
-    // day, month and year should be pulled from startDate, not todays date
-    // TODO: fix this - something isn't right
-    let testDay = startDate.substring(8)
-    let testMonth = startDate.substring(5, 7)
-    let testYear = startDate.substring(0, 4)
-
     let selectedRadioButton;
+    
     let rangeStart;
     let rangeEnd = startDate
+    let startDay = startDate.substring(8)
+    let startMonth = startDate.substring(5, 7) - 1
+    let startYear = startDate.substring(0, 4)
+    const date = new Date(startYear, startMonth, startDay)
     
     // get the checked radio button
     for(var i = 0; i < radioButtons.length; i++){
@@ -334,28 +332,25 @@ addRangeForm.onclick = function(){
         }
     }
 
-    // build yesterday/lastweek/lastmonth/lastyear from startDate 
+    // build yesterday/lastweek/lastmonth/lastyear from startDate
     switch(selectedRadioButton){
-        // startDate = yyyy-mm-dd
         case 'day':
-            // 
-            const yesterday = new Date(testYear, testMonth, date.getDay() - 1).toISOString().slice(0, 10)
-            console.log('yesterday is ', yesterday)
-            rangeStart = yesterday
+            date.setDate(startDay - 1)
+            const yesterday = date.toISOString().slice(0, 10)
+            rangeEnd = rangeStart = yesterday
             break
         case 'week':
-            // calculate previous week
-            const lastWeek = new Date(testYear, testMonth, date.getDay() - 7).toISOString().slice(0, 10)
-            console.log('last week is ', lastWeek)
+            date.setDate(startDay - 7)
+            const lastWeek = date.toISOString().slice(0, 10)
             rangeStart = lastWeek
             break
         case 'month':
-            const lastMonth = new Date(testYear, date.getMonth() - 1, testDay).toISOString().slice(0, 10)
-            console.log('lastMonth is ', lastMonth)
+            date.setMonth(startMonth - 1)
+            const lastMonth = date.toISOString().slice(0, 10)
             rangeStart = lastMonth
             break
         case 'year':
-            rangeStart = testYear - 1 + startDate.slice(4)
+            rangeStart = startYear - 1 + startDate.slice(4)
             break
     }
 
@@ -364,8 +359,6 @@ addRangeForm.onclick = function(){
 }
 
 function addRange(request){
-
-    console.log('addrange request ', request)
     // create new chart div above current chart div
     const rangeChart = document.createElement('div')
     rangeChart.classList.add('ct-chart')
@@ -375,17 +368,9 @@ function addRange(request){
     parentDiv.insertAdjacentElement('afterbegin', rangeChart)
     
     // call drawChart and pass the handle for the new chart div into it
+    // TODO: make this chart a different color than the first chart. 
     drawChart(request, rangeChart)
 }
-
-
-/***** Comparison Function *****/
-
-// get a handle on the radio button lists and find which one was checked
-
-// create a new date object with startDate = start - 1 week and endDate = start 
-
-// graph that jawn. (probably just make a second x-axis and compare them like that)
 
 /***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
 
