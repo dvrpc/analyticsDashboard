@@ -51,8 +51,7 @@
 .ct-series-a .ct-line {
     stroke-width: 3px;
 }
-.ct-series-a .ct-point,
-.ct-series-b .ct-point{
+.ct-series-a .ct-point{
     stroke-width: 1px;
 }
 .section-hourly-users table {
