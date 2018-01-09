@@ -43,17 +43,13 @@
 #metrics-start, #metrics-end{
     color: black;
 }
-#chart-div{
+#charts{
     margin: 0 auto;
     margin-top: 1%;
     width: 95%;
 }
 .ct-series-a .ct-line {
-    stroke-width: 2px;
-}
-.ct-series-b .ct-line {
-    stroke: green;
-    stroke-width: 2px;
+    stroke-width: 3px;
 }
 .ct-series-a .ct-point,
 .ct-series-b .ct-point{

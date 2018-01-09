@@ -172,20 +172,22 @@
                                                 <div class="row" style="margin-top: 18px">
                                                     <h3 class="range-metrics-header"> Metrics for Interactions from <strong id="metrics-start"></strong></h3>
                                                     <div id="charts-and-tabs" class="col-sm-8">
-                                                        <div class="ct-chart ct-major-tenth" id="chart-div"></div>
+                                                        <div id="charts">
+                                                            <div class="ct-chart ct-major-tenth" id="chart-div"></div>
+                                                        </div>    
                                                         <form id="range-form" class="form-inline vertical-flex">
-                                                            <p> Compare To Previous: </p>
+                                                            <p> Compare Graph To Previous: </p>
                                                             <label for="previousWeek">Day</label>
-                                                            <input type="radio" name="comp" id="previousDay" value="day" >
+                                                            <input type="radio" name="comp" id="previousDay" value="day" checked>
 
                                                             <label for="previousWeek">Week</label>
                                                             <input type="radio" name="comp" id="previousWeek" value="week">
 
                                                             <label for="previousMonth">Month</label>
-                                                            <input type="radio" name="comp" id="previousMonth" value="month" checked>
+                                                            <input type="radio" name="comp" id="previousMonth" value="month">
 
                                                             <label for="previousYear">Year</label>
-                                                            <input type="radio" name="comp" id="previousYear" value="year" >
+                                                            <input type="radio" name="comp" id="previousYear" value="year">
 
                                                             <button type="button" id="add-range" class="btn btn-success">Compare</button>
                                                         </form>

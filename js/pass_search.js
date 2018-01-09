@@ -43,7 +43,7 @@ $('#reportrange').on('apply.daterangepicker', function(event, picker) {
 all three, or any combination of the three with predictable results. */
 form.onsubmit = function(){
   pageURL = searchQuery.value.slice(14)
-	localStorage.setItem('page', pageURL)
-	localStorage.setItem('startDate', start)
-	localStorage.setItem('endDate', end)
+	localStorage.pageURL === pageURL ? null : localStorage.setItem('page', pageURL)
+	localStorage.startDate === start ? null : localStorage.setItem('startDate', start)
+	localStorage.endDate === end ? null : localStorage.setItem('endDate', end)
 }

@@ -3,6 +3,8 @@
 const path = localStorage.getItem('page')
 let startDate = localStorage.getItem('startDate')
 let endDate = localStorage.getItem('endDate')
+let rangeStart;
+let rangeEnd = startDate
 
 // set the main heading & the range subheading
 const mainHeader = document.querySelector('#results-path')
@@ -19,7 +21,7 @@ const hourly = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate
 const activeUsers = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:hostname&metric=ga:pageviews&dimensionFilter=ga:pagePath,${path}&sortByMetric=true`
 const subPaths = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:pagePath&metric=ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&pageSize=10&sortByMetric=true`
 const comingFrom = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:fullReferrer&metric=ga:organicSearches,ga:pageviews,ga:sessions,ga:avgTimeOnPage&dimensionFilter=ga:pagePath,${path}&pageSize=10&sortByMetric=true`
-const dailyGraph = `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
+const dailyGraph = startDate != endDate ? `http://intranet.dvrpc.org/google/analytics?startDate=${startDate}&endDate=${endDate}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}` : hourly
 
 
 /**** Functions to set up the API Calls *****/
@@ -259,24 +261,29 @@ function activeRequest(request) {
     const response = JSON.parse(request.response)
     text.textContent = response.result.totals[0].values[0]
 }
-makeRequest(activeUsers, activeRequest) 
+makeRequest(activeUsers, activeRequest)
 
 
 /***** Pageviews over Time Graph *****/
 const addRangeForm = document.getElementById('add-range')
 const chartDiv = document.getElementById('chart-div')
 
-function drawChart(request, chartDiv){
+function drawChart(request, chartDiv, start, end){
     const initialChartData = []
 
     const response = JSON.parse(request.response)
     const rows = response.result.rows
+    let date;
 
     rows.forEach(function(row){
-        const year = row.dimensions[0].slice(0, 4)
-        const month = row.dimensions[0].slice(4, 6) - 1
-        const day = row.dimensions[0].slice(6) - 1
-        const date = new Date(year, month, day)
+        if(row.dimensions[0].length === 2){
+            date = [row.dimensions[0]]
+        }else{
+            const year = row.dimensions[0].slice(0, 4)
+            const month = row.dimensions[0].slice(4, 6) - 1
+            const day = row.dimensions[0].slice(6) - 1
+            date = new Date(year, month, day)
+        }
         initialChartData.push({
             x: date,
             y: row.metrics[0].values[0]
@@ -294,8 +301,11 @@ function drawChart(request, chartDiv){
         showArea: true,
         axisX: {
             type: Chartist.AutoScaleAxis,
-            // TODO: bool for hourly breakdown if start and end are the same
             labelInterpolationFnc: function(value){
+                if(start === end) {
+                    console.log('value up in this ', value)
+                    return moment(value).format('ddd, hA')
+                }
                 return moment(value).format('MMM D')
             }
         }
@@ -304,21 +314,16 @@ function drawChart(request, chartDiv){
 
 // helper function to deal with some scoping stuff
 function invokeChart(request){
-    drawChart(request, chartDiv)
+    drawChart(request, chartDiv, startDate, endDate)
 }
 
 makeRequest(dailyGraph, invokeChart)
-console.log('start date is ', startDate)
-console.log('end date is ', endDate)
 
-// Functions for the comparison chart, should a user make one
 // TODO: REMOVE/REPLACE the initial comparison chart whenever a user decides to create another comparison!
 addRangeForm.onclick = function(){
     let radioButtons = document.getElementsByName('comp')
     let selectedRadioButton;
     
-    let rangeStart;
-    let rangeEnd = startDate
     let startDay = startDate.substring(8)
     let startMonth = startDate.substring(5, 7) - 1
     let startYear = startDate.substring(0, 4)
@@ -361,15 +366,13 @@ addRangeForm.onclick = function(){
 function addRange(request){
     // create new chart div above current chart div
     const rangeChart = document.createElement('div')
-    rangeChart.classList.add('ct-chart')
-    // this will change - find the right ratio to display two on top of each other w/o taking up too much space
-    rangeChart.classList.add('ct-major-tenth')
-    const parentDiv = document.getElementById('charts-and-tabs')
+    rangeChart.classList.add('ct-chart', 'ct-series-b', 'ct-major-tenth')
+    const parentDiv = document.getElementById('charts')
     parentDiv.insertAdjacentElement('afterbegin', rangeChart)
     
     // call drawChart and pass the handle for the new chart div into it
     // TODO: make this chart a different color than the first chart. 
-    drawChart(request, rangeChart)
+    drawChart(request, rangeChart, rangeStart, rangeEnd)
 }
 
 /***** General Functionality (scroll between the tabs, submit startDate/endDate and website search *****/
