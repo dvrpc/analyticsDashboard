@@ -363,12 +363,20 @@ addRangeForm.onclick = function(){
     makeRequest(rangeUrl, addRange)
 }
 
+let compared = false
 function addRange(request){
     // create new chart div above current chart div
-    const rangeChart = document.createElement('div')
-    rangeChart.classList.add('ct-chart', 'ct-series-b', 'ct-major-tenth')
-    const parentDiv = document.getElementById('charts')
-    parentDiv.insertAdjacentElement('afterbegin', rangeChart)
+    let rangeChart;
+    if(!compared){    
+        rangeChart = document.createElement('div')
+        rangeChart.id = 'comparison-chart'
+        rangeChart.classList.add('ct-chart', 'ct-series-b', 'ct-major-tenth')
+        const parentDiv = document.getElementById('charts')
+        parentDiv.insertAdjacentElement('afterbegin', rangeChart)
+        compared = true
+    }else{
+        rangeChart = document.getElementById('comparison-chart')
+    }
     
     // call drawChart and pass the handle for the new chart div into it
     // TODO: make this chart a different color than the first chart. 
