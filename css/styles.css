@@ -1,11 +1,11 @@
-#main-heading{
+#main-heading {
     display: flex;
     justify-content: space-between;
 }
-#results-path{
+#results-path {
     color: black;
 }
-#organic-searches{
+#organic-searches {
     color: black;
 }
 .section-active-users {
@@ -16,34 +16,34 @@
     font-size: 4em;
     font-weight: bold;
 }
-.vertical-flex{
+.vertical-flex {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-#reportrange{
+#reportrange {
     margin: 0 1% 0 1%;
     cursor: pointer;
 }
-#range-form p{
+#range-form p {
     font-weight: 700;
 }
-#range-form label{
+#range-form label {
     padding: 0.5% 0.5% 0 1%;
 }
-#add-range{
+#add-range {
     margin-left: 1%;
 }
-.range-metrics-header{
+.range-metrics-header {
     text-align: center;
     font-size: 2em;
     margin: 0;
     padding-top: 2.5%;
 }
-#metrics-start, #metrics-end{
+#metrics-start, #metrics-end {
     color: black;
 }
-#charts{
+#charts {
     margin: 0 auto;
     margin-top: 1%;
     width: 95%;
@@ -51,8 +51,12 @@
 .ct-series-a .ct-line {
     stroke-width: 3px;
 }
-.ct-series-a .ct-point{
+.ct-series-a .ct-point {
     stroke-width: 1px;
+}
+.ct-label {
+    font-size: 0.7em !important;
+    font-weight: 900;
 }
 .section-hourly-users table {
     table-layout: fixed;

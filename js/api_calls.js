@@ -1,5 +1,4 @@
 // query string variables 
-// with the changes to the home, today will be eliminated and startDate/endDate will always be whatever is the localStorage item
 const path = localStorage.getItem('page')
 let startDate = localStorage.getItem('startDate')
 let endDate = localStorage.getItem('endDate')
@@ -10,7 +9,7 @@ let rangeEnd = startDate
 const mainHeader = document.querySelector('#results-path')
 const rangeHeader = document.getElementById('metrics-start')
 mainHeader.textContent += path
-rangeHeader.textContent = `${startDate} : ${endDate}`
+rangeHeader.textContent = `${moment(startDate).format('MMM Do YYYY')} - ${moment(endDate).format('MMM Do YYYY')}`
 
 
 /***** API URL's *****/
@@ -143,6 +142,7 @@ function buildTechSection(index, rank, row, total, techName, techPercent, techBa
     techBar[index].textContent = rank.percent + '%'
     techBar[index].style.width = `${rank.percent}%`
 }
+
 function deviceRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
@@ -166,6 +166,7 @@ function deviceRequest(request) {
         }
     })
 }
+
 function browserRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
@@ -197,6 +198,7 @@ function browserRequest(request) {
         }
     })
 }
+
 function osRequest(request) {
     const response = JSON.parse(request.response)
     const result = response.result
@@ -264,9 +266,144 @@ function activeRequest(request) {
 makeRequest(activeUsers, activeRequest)
 
 
-/***** Pageviews over Time Graph *****/
+/***** Pageviews over Time Graph(s) *****/
 const addRangeForm = document.getElementById('add-range')
 const chartDiv = document.getElementById('chart-div')
+
+const convertToAMPM = timeString => {
+    if(!timeString) return ''
+    let hours = +timeString.substr(0, 2)
+    const hoursFormatted = (hours % 12) || 12
+    let amORpm = hours < 12 ? 'a' : 'p'
+    const formattedTime = hoursFormatted + timeString.substr(2, 3) + amORpm
+    return formattedTime
+}
+
+// I hate that this entire plugin is needed JUST to have axes titles. Absurd. TODO: swith to something other than Chartist.js
+/**
+ * Chartist.js plugin to display a title for 1 or 2 axes.
+ * version 0.0.4
+ * author: alex stanbury
+ */
+/* global Chartist */
+(function (window, document, Chartist) {
+    var axisDefaults = {
+        axisTitle: '',
+        axisClass: 'ct-axis-title',
+        offset: {
+            x: 0,
+            y: 0
+        },
+        textAnchor: 'middle',
+        flipTitle: false
+    };
+
+    var defaultOptions = {
+        axisX: axisDefaults,
+        axisY: axisDefaults
+    };
+
+    var getTitle = function (title) {
+        if (title instanceof Function) {
+            return title();
+        }
+        return title;
+    };
+
+    var getClasses = function (classes) {
+        if (classes instanceof Function) {
+            return classes();
+        }
+        return classes;
+    };
+
+    Chartist.plugins = Chartist.plugins || {};
+    Chartist.plugins.ctAxisTitle = function(options) {
+
+        options = Chartist.extend({}, defaultOptions, options);
+
+        return function ctAxisTitle(chart) {
+
+            chart.on('created', function(data) {
+
+                if (!options.axisX.axisTitle && !options.axisY.axisTitle) {
+                    throw new Error(
+                        'ctAxisTitle plugin - You must provide at least one axis title'
+                    );
+                } else if (!data.axisX && !data.axisY) {
+                    throw new Error(
+                        'ctAxisTitle plugin can only be used on charts that have at least one axis'
+                    );
+                }
+
+                var xPos,
+                    yPos,
+                    title,
+                    chartPadding = Chartist.normalizePadding(data.options.chartPadding); // normalize the padding in case the full padding object was not passed into the options
+
+                //position axis X title
+                if (options.axisX.axisTitle && data.axisX) {
+
+                    xPos = (data.axisX.axisLength / 2) + data.options.axisY.offset +
+                        chartPadding.left;
+
+                    yPos = chartPadding.top;
+
+                    if (data.options.axisY.position === 'end') {
+                        xPos -= data.options.axisY.offset;
+                    }
+
+                    if (data.options.axisX.position === 'end') {
+                        yPos += data.axisY.axisLength;
+                    }
+
+                    title = new Chartist.Svg("text");
+                    title.addClass(getClasses(options.axisX.axisClass));
+                    title.text(getTitle(options.axisX.axisTitle));
+                    title.attr({
+                        x: xPos + options.axisX.offset.x,
+                        y: yPos + options.axisX.offset.y,
+                        "text-anchor": options.axisX.textAnchor
+                    });
+
+                    data.svg.append(title, true);
+
+                }
+
+                //position axis Y title
+                if (options.axisY.axisTitle && data.axisY) {
+                    xPos = 0;
+
+
+                    yPos = (data.axisY.axisLength / 2) + chartPadding
+                            .top;
+
+                    if (data.options.axisX.position === 'start') {
+                        yPos += data.options.axisX.offset;
+                    }
+
+                    if (data.options.axisY.position === 'end') {
+                        xPos = data.axisX.axisLength;
+                    }
+
+                    var transform = 'rotate(' + (options.axisY.flipTitle ? -
+                                90 : 90) + ', ' + xPos + ', ' + yPos + ')';
+
+                    title = new Chartist.Svg("text");
+                    title.addClass(getClasses(options.axisY.axisClass));
+                    title.text(getTitle(options.axisY.axisTitle));
+                    title.attr({
+                        x: xPos + options.axisY.offset.x,
+                        y: yPos + options.axisY.offset.y,
+                        transform: transform,
+                        "text-anchor": options.axisY.textAnchor
+                    });
+                    data.svg.append(title, true);
+                }
+            });
+        };
+    };
+}(window, document, Chartist));
 
 function drawChart(request, chartDiv, start, end){
     const initialChartData = []
@@ -303,12 +440,32 @@ function drawChart(request, chartDiv, start, end){
             type: Chartist.AutoScaleAxis,
             labelInterpolationFnc: function(value){
                 if(start === end) {
-                    console.log('value up in this ', value)
-                    return moment(value).format('ddd, hA')
+                    const hours = ''+Math.floor(value)
+                    return convertToAMPM(hours)
+                }else{
+                    return moment(value).format('MMM D')
                 }
-                return moment(value).format('MMM D')
             }
-        }
+        },
+        plugins: [
+            Chartist.plugins.ctAxisTitle({
+                axisY: {
+                    axisTitle: 'Page Views',
+                    offset: {
+                        x: 0,
+                        y: 12
+                    },
+                    flipTitle: true
+                },
+                axisX: {
+                    axisTitle: 'Time',
+                    offset: {
+                        x: 0,
+                        y: 35
+                    }
+                }
+            })
+        ]
     })
 }
 
@@ -319,11 +476,11 @@ function invokeChart(request){
 
 makeRequest(dailyGraph, invokeChart)
 
-// TODO: REMOVE/REPLACE the initial comparison chart whenever a user decides to create another comparison!
 addRangeForm.onclick = function(){
     let radioButtons = document.getElementsByName('comp')
     let selectedRadioButton;
-    
+    let rangeURL;
+
     let startDay = startDate.substring(8)
     let startMonth = startDate.substring(5, 7) - 1
     let startYear = startDate.substring(0, 4)
@@ -343,6 +500,8 @@ addRangeForm.onclick = function(){
             date.setDate(startDay - 1)
             const yesterday = date.toISOString().slice(0, 10)
             rangeEnd = rangeStart = yesterday
+            // have to make an hourly request for a single day comparison - date request for single day only returns 1 value
+            rangeURL = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:hour&metric=ga:pageviews&sortByDimension=true&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
             break
         case 'week':
             date.setDate(startDay - 7)
@@ -359,8 +518,8 @@ addRangeForm.onclick = function(){
             break
     }
 
-    const rangeUrl = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
-    makeRequest(rangeUrl, addRange)
+    rangeURL ? null : rangeURL = `http://intranet.dvrpc.org/google/analytics?startDate=${rangeStart}&endDate=${rangeEnd}&dimension=ga:date&metric=ga:pageviews&sortAscending=true&dimensionFilter=ga:pagePath,${path}`
+    makeRequest(rangeURL, addRange)
 }
 
 let compared = false
@@ -370,12 +529,12 @@ function addRange(request){
     if(!compared){    
         rangeChart = document.createElement('div')
         rangeChart.id = 'comparison-chart'
-        rangeChart.classList.add('ct-chart', 'ct-series-e', 'ct-major-tenth')
+        rangeChart.classList.add('ct-chart', 'ct-series-e', 'ct-major-twelfth')
         const parentDiv = document.getElementById('charts')
         parentDiv.insertAdjacentElement('afterbegin', rangeChart)
         compared = true
     }else rangeChart = document.getElementById('comparison-chart')
-     
+
     drawChart(request, rangeChart, rangeStart, rangeEnd)
 }
 
